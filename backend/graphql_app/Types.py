@@ -87,3 +87,19 @@ class SeatDetailType:
     zone_name: str
     seat_number: str
     status: str
+
+@strawberry.type
+class BookingDetailType:
+    booking_id: int
+    user_id: int
+    concert_id: int
+    schedule_id: int
+    status: str  # pending, confirmed, cancelled
+    
+
+@strawberry.type
+class TicketDetailType:
+    ticket_id: int
+    booking_id: int
+    ticket_code: str
+    qr_code: str

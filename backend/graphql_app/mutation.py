@@ -7,7 +7,8 @@ from schedule_gateway import ScheduleGateway
 from booking_gateway import BookingGateway
 from ticket_gateway import TicketGateway
 from seat_gateway import SeatGateway
-from .Types import ConcertType, ScheduleType, BookingType, TicketType, SeatType, SeatDetailType
+from .Types import ConcertType, ScheduleType, BookingType, TicketType, SeatType
+from .Types import SeatDetailType, BookingDetailType, TicketDetailType
 from typing import Optional
 
 @strawberry.type
