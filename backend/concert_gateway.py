@@ -5,34 +5,30 @@ from typing import Optional, List
 
 class ConcertGateway:
     @classmethod
-    def get_concerts(cls) -> List[Concert]:
+    def get_concerts(cls) -> List[dict]:
         """ดึงข้อมูลคอนเสิร์ตทั้งหมด"""
         with SessionLocal() as db:
-            return db.query(Concert).all()
+            concerts = db.query(Concert).all()
+            return [
+                {
+                    "concert_id": c.concert_id,
+                    "concert_name": c.concert_name,
+                    "band_name": c.band_name,
+                    "concert_type": c.concert_type
+                }
+                for c in concerts
+            ]
 
     @classmethod
-    def get_concert_by_id(cls, concert_id: int) -> Optional[Concert]:
-        """ดึงข้อมูลคอนเสิร์ตโดย ID"""
-        with SessionLocal() as db:
-            return db.query(Concert).filter(Concert.concert_id == concert_id).first()
-
-    @classmethod
-    def add_concert(cls, band_id: int, concert_name: str, gate: str) -> Optional[Concert]:
-        """เพิ่มคอนเสิร์ตใหม่"""
-        with SessionLocal() as db:
-            new_concert = Concert(band_id=band_id, concert_name=concert_name, gate=gate)
-            db.add(new_concert)
-            db.commit()
-            db.refresh(new_concert)
-            return new_concert
-
-    @classmethod
-    def delete_concert(cls, concert_id: int) -> bool:
-        """ลบคอนเสิร์ต"""
+    def get_concert_by_id(cls, concert_id: int) -> Optional[dict]:
+        """ดึงข้อมูลคอนเสิร์ตตาม ID"""
         with SessionLocal() as db:
             concert = db.query(Concert).filter(Concert.concert_id == concert_id).first()
-            if not concert:
-                return False
-            db.delete(concert)
-            db.commit()
-            return True
+            if concert:
+                return {
+                    "concert_id": concert.concert_id,
+                    "concert_name": concert.concert_name,
+                    "band_name": concert.band_name,
+                    "concert_type": concert.concert_type
+                }
+        return None
