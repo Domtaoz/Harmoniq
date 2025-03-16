@@ -23,7 +23,7 @@ class User(Base):
     )
 
     def __repr__(self):
-        return f"<User(id={self.id}, display_name={self.display_name}, email={self.email})>"
+        return f"<User(id={self.id}, display_name={self.display_name}, username={self.username})>"
 
 class SeatStatus(enum.Enum):
     available = "available"
