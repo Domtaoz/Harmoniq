@@ -17,15 +17,15 @@ class TicketGateway:
             return db.query(Ticket).filter(Ticket.ticket_id == ticket_id).first()
 
     @classmethod
-    def get_tickets_by_user(cls, user_id: int) -> List[dict]:
-        """ดึงข้อมูลตั๋วของผู้ใช้ที่ชำระเงินแล้ว"""
+    def get_ticket_details_by_user(cls, user_id: int) -> List[dict]:
+        """ดึงรายละเอียดตั๋วของผู้ใช้ที่ชำระเงินแล้ว"""
         with SessionLocal() as db:
             tickets = (
                 db.query(
                     Ticket.ticket_id,
-                    Ticket.ticket_code,
+                    Ticket.booking_id,
                     Ticket.user_id,
-                    Booking.booking_id,
+                    Ticket.ticket_code,
                     Concert.concert_name,
                     Zone.zone_name,
                     Seat.seat_number
@@ -40,11 +40,12 @@ class TicketGateway:
             return [
                 {
                     "ticket_id": t.ticket_id,
+                    "booking_id": t.booking_id,
                     "user_id": t.user_id,
-                    "ticket_code": t.ticket_code,
                     "concert_name": t.concert_name,
                     "zone_name": t.zone_name,
-                    "seat_number": t.seat_number
+                    "seat_number": t.seat_number,
+                    "ticket_code": t.ticket_code
                 }
                 for t in tickets
             ]

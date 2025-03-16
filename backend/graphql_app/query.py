@@ -101,3 +101,21 @@ class Query:
                 ticket_code=t["ticket_code"]
             ) for t in tickets
         ]
+        
+    @strawberry.field
+    def get_ticket_details_by_user(self, user_id: int) -> List[TicketType]:
+        """แสดงรายละเอียดตั๋วของผู้ใช้ที่ชำระเงินแล้ว"""
+        tickets = TicketGateway.get_ticket_details_by_user(user_id)
+        return [
+            TicketType(
+                ticket_id=t["ticket_id"],
+                booking_id=t["booking_id"],
+                user_id=t["user_id"],
+                concert_name=t["concert_name"],
+                zone_name=t["zone_name"],
+                seat_number=t["seat_number"],
+                ticket_code=t["ticket_code"]
+            ) for t in tickets
+        ]
+
+    

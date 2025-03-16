@@ -54,4 +54,7 @@ class TicketType:
     ticket_id: int
     booking_id: int
     user_id: int
+    concert_name: str
+    zone_name: str
+    seat_number: str
     ticket_code: str
