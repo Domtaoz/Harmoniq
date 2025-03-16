@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from graphql_app.database import SessionLocal
-from graphql_app.model import Ticket, Booking, Concert, Zone, Seat, Schedule
+from graphql_app.model import Ticket, Booking, Concert, Zone, Seat
 from typing import Optional, List
 
 class TicketGateway:

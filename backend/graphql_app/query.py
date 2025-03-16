@@ -6,7 +6,7 @@ from booking_gateway import BookingGateway
 from ticket_gateway import TicketGateway
 from zone_gateway import ZoneGateway
 from seat_gateway import SeatGateway
-from types import UserType, ConcertType, ZoneType, SeatType, BookingType, TicketType
+from .Types import UserType, ConcertType, ZoneType, SeatType, BookingType, TicketType
 
 @strawberry.type
 class Query:
