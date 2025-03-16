@@ -7,7 +7,7 @@ conn = mysql.connector.connect(
     port = 3306,
     user="root",
     password="123456",
-    database="dexto_demo9"
+    database="harmoniq"
 )
 
 # Create a cursor object
