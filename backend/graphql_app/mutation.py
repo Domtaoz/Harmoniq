@@ -1,12 +1,13 @@
 import strawberry
-from gateway import Gateway
 from model import User, Concert, Booking, Seat
-from types import UserType, ConcertType, BookingType, SeatType
 from .Types import UserType, LoginResponse
 from user_gateway import UserGateway
+from concert_gateway import ConcertGateway
+from schedule_gateway import ScheduleGateway
+from booking_gateway import BookingGateway
+from ticket_gateway import TicketGateway
+from types import ConcertType, ScheduleType, BookingType, TicketType
 from typing import Optional
-
-gateway = Gateway()
 
 @strawberry.type
 class Mutation:
@@ -95,10 +96,23 @@ class Mutation:
         # ถ้ามีระบบ Session ต้องทำการลบ Session ที่นี่ (เช่น Redis หรือ Database)
         # ถ้ามีระบบ JWT ให้ลบ Token หรือทำให้ Token ใช้ไม่ได้ (เช่น Blacklist)
         return True  # ✅ คืนค่า success = Tru
+    
     @strawberry.mutation
-    def update_seat_status(self, seat_id: int, new_status: str) -> SeatType:
-        return gateway.update_seat_status(seat_id, new_status)
+    def add_concert(self, band_id: int, concert_name: str, gate: str) -> ConcertType:
+        return ConcertGateway.add_concert(band_id, concert_name, gate)
+
+    @strawberry.mutation
+    def add_schedule(self, concert_id: int, show_date: str, start_time: str, end_time: str) -> ScheduleType:
+        return ScheduleGateway.add_schedule(concert_id, show_date, start_time, end_time)
 
     @strawberry.mutation
     def update_booking_status(self, booking_id: int, new_status: str) -> BookingType:
-        return gateway.update_booking_status(booking_id, new_status)
+        return BookingGateway.update_booking_status(booking_id, new_status)
+
+    @strawberry.mutation
+    def delete_concert(self, concert_id: int) -> bool:
+        return ConcertGateway.delete_concert(concert_id)
+
+    @strawberry.mutation
+    def delete_schedule(self, schedule_id: int) -> bool:
+        return ScheduleGateway.delete_schedule(schedule_id)
