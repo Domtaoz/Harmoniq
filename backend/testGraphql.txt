@@ -1,0 +1,49 @@
+# {
+#   concerts {
+#     concertId
+#     concertName
+#     gate
+#   }
+#   schedules {
+#     scheduleId
+#     concertId
+#     showDate
+#     startTime
+#     endTime
+#   }
+#   bookings {
+#     bookingId
+#     userId
+#     concertId
+#     scheduleId
+#     status
+#   }
+# }
+
+mutation {
+  addConcert(bandId: 1, concertName: "Rock Festival", gate: "A1") {
+    concertId
+    concertName
+    gate
+  }
+}
+
+mutation {
+  addSchedule(concertId: 1, showDate: "2024-06-01", startTime: "18:00:00", endTime: "21:00:00") {
+    scheduleId
+    showDate
+    startTime
+    endTime
+  }
+}
+
+mutation {
+  updateBookingStatus(bookingId: 1, newStatus: "confirmed") {
+    bookingId
+    status
+  }
+}
+
+mutation {
+  deleteConcert(concertId: 1)
+}
