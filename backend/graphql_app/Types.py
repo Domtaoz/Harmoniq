@@ -5,7 +5,18 @@ from typing import List, Optional
 @strawberry.type
 class UserType:
     id: int
-    username: str
+    display_name: str
+    email: str
+    profile_picture_url: str
+    request_sent: bool = False
+    request_received: bool = False
+    is_friend: bool = False
+    
+@strawberry.type
+class LoginResponse:
+    success: bool
+    message: str
+    user: Optional[UserType]
 
 @strawberry.type
 class BandType:
