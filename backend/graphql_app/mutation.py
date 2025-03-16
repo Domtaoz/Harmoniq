@@ -118,18 +118,22 @@ class Mutation:
     @strawberry.mutation
     def create_booking(self, user_id: int, concert_id: int, zone_id: int, seat_ids: List[int]) -> Optional[BookingType]:
         """สร้างการจองและระบุจำนวนที่นั่งที่จอง"""
-        booking = BookingGateway.create_booking(user_id, concert_id, zone_id, seat_ids)
+        seat_count = len(seat_ids)  # นับจำนวนที่นั่งที่จอง
+        booking = BookingGateway.create_booking(user_id, concert_id, zone_id, seat_ids, seat_count)
+    
         if booking:
             return BookingType(
                 booking_id=booking["booking_id"],
                 user_id=booking["user_id"],
                 concert_id=booking["concert_id"],
                 zone_id=booking["zone_id"],
-                seat_id=booking["seat_id"],
+                seat_ids=booking["seat_ids"],
+                seat_count=booking["seat_count"],  # จำนวนที่นั่งที่จอง
+                total_price=booking["total_price"],  # ราคาทั้งหมดที่ต้องจ่าย
                 booking_status=booking["booking_status"]
             )
         return None
-
+    
     @strawberry.mutation
     def update_booking_status(self, booking_id: int, new_status: str) -> Optional[BookingType]:
         """เปลี่ยนสถานะการจอง"""
