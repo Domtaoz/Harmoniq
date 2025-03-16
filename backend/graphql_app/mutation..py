@@ -1,7 +1,7 @@
 import strawberry
 from gateway import Gateway
-from model import User, Concert, Schedule, Booking, Seat
-from types import UserType, ConcertType, ScheduleType, BookingType, SeatType
+from model import User, Concert, Booking, Seat
+from types import UserType, ConcertType, BookingType, SeatType
 
 gateway = Gateway()
 
@@ -11,11 +11,6 @@ class Mutation:
     def add_user(self, username: str, password: str) -> UserType:
         new_user = User(username=username, password=password)
         return gateway.add_item(new_user)
-
-    @strawberry.mutation
-    def add_concert(self, band_id: int, concert_name: str, gate: str) -> ConcertType:
-        new_concert = Concert(band_id=band_id, concert_name=concert_name, gate=gate)
-        return gateway.add_item(new_concert)
 
     @strawberry.mutation
     def update_seat_status(self, seat_id: int, new_status: str) -> SeatType:

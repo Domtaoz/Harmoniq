@@ -1,8 +1,8 @@
 import strawberry
 from typing import List
 from gateway import Gateway
-from model import User, Concert, Schedule, Booking, Seat
-from types import UserType, ConcertType, ScheduleType, BookingType, SeatType
+from model import User, Band, Concert, Schedule, Booking, Ticket
+from types import UserType, BandType, ConcertType, ScheduleType, BookingType, TicketType
 
 gateway = Gateway()
 
@@ -11,6 +11,10 @@ class Query:
     @strawberry.field
     def users(self) -> List[UserType]:
         return gateway.get_all(User)
+
+    @strawberry.field
+    def bands(self) -> List[BandType]:
+        return gateway.get_all(Band)
 
     @strawberry.field
     def concerts(self) -> List[ConcertType]:
@@ -25,5 +29,5 @@ class Query:
         return gateway.get_all(Booking)
 
     @strawberry.field
-    def seats(self) -> List[SeatType]:
-        return gateway.get_all(Seat)
+    def tickets(self) -> List[TicketType]:
+        return gateway.get_all(Ticket)

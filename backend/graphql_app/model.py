@@ -23,8 +23,8 @@ class Band(Base):
     __tablename__ = "bands"
     band_id = Column(Integer, primary_key=True, index=True)
     band_name = Column(String, unique=True, nullable=False)
-    genre = Column(JSON, nullable=False)  # เช่น ["Rock", "Pop"]
-    members = Column(JSON, nullable=False)  # เช่น [{"name": "John", "role": "Vocal"}]
+    genre = Column(JSON, nullable=False)  
+    members = Column(JSON, nullable=False)  
 
 class Concert(Base):
     __tablename__ = "concerts"
