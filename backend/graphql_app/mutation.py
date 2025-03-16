@@ -1,5 +1,5 @@
 import strawberry
-from model import User, Concert, Booking, Seat
+from .model import User, Concert, Booking, Seat
 from .Types import UserType, LoginResponse
 from user_gateway import UserGateway
 from concert_gateway import ConcertGateway

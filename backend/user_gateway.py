@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.sql import func
 from graphql_app.database import SessionLocal
-from graphql_app.model import User, Friend
+from graphql_app.model import User
 from typing import Optional, List
 
 class UserGateway:
