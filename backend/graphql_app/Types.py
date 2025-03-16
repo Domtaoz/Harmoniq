@@ -46,7 +46,6 @@ class ZoneType:
     concert_id: int
     zone_name: str
     price: float
-    capacity: int
 
 @strawberry.type
 class SeatType:
@@ -83,10 +82,10 @@ class SeatType:
 @strawberry.type
 class SeatDetailType:
     seat_id: int
-    concert_name: str
+    concert_id: int
     zone_name: str
     seat_number: str
-    status: str
+    seat_status: str
 
 @strawberry.type
 class BookingDetailType:
@@ -112,3 +111,12 @@ class TicketDetailType:
     show_date: str
     start_time: str
     end_time: str
+    
+@strawberry.type
+class ConcertDetailType:
+    concert_id: int
+    concert_name: str
+    band_name: str
+    concert_type: str
+    band_members: List[str]
+    
