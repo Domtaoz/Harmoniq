@@ -6,7 +6,7 @@ from typing import List, Optional
 class UserType:
     id: int
     display_name: str
-    email: str
+    username: str
     profile_picture_url: str
     request_sent: bool = False
     request_received: bool = False

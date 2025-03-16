@@ -20,21 +20,21 @@ class UserGateway:
             return db.query(User).filter(User.id == id).first()
 
     @classmethod
-    def add_user(cls, display_name: str, email: str, password: str, profile_picture_url: Optional[str] = None) -> Optional[User]:
+    def add_user(cls, display_name: str, username: str, password: str, profile_picture_url: Optional[str] = None) -> Optional[User]:
         """เพิ่มผู้ใช้ใหม่"""
         hashed_pw = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode('utf-8')
         with SessionLocal() as db:
-            if db.query(User).filter(User.email == email).first():
-                raise ValueError("Email already in use")
+            if db.query(User).filter(User.username == username).first():
+                raise ValueError("username already in use")
             
-            new_user = User(display_name=display_name, email=email, password=hashed_pw, profile_picture_url=profile_picture_url)
+            new_user = User(display_name=display_name, username=username, password=hashed_pw, profile_picture_url=profile_picture_url)
             db.add(new_user)
             db.commit()
             db.refresh(new_user)
             return new_user
 
     @classmethod
-    def update_user(cls, id: int, display_name: Optional[str] = None, email: Optional[str] = None,
+    def update_user(cls, id: int, display_name: Optional[str] = None, username: Optional[str] = None,
                     password: Optional[str] = None, profile_picture_url: Optional[str] = None) -> Optional[User]:
         """อัปเดตข้อมูลผู้ใช้"""
         with SessionLocal() as db:
@@ -44,8 +44,8 @@ class UserGateway:
 
             if display_name:
                 user.display_name = display_name
-            if email:
-                user.email = email
+            if username:
+                user.username = username
             if password:
                 user.password = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode('utf-8')
             if profile_picture_url:
@@ -80,20 +80,20 @@ class UserGateway:
             return True
 
     @classmethod
-    def login_user(cls, email: str, password: str) -> Optional[User]:
+    def login_user(cls, username: str, password: str) -> Optional[User]:
         """ตรวจสอบการเข้าสู่ระบบ"""
         with SessionLocal() as db:
-            user = db.query(User).filter(User.email == email).first()
+            user = db.query(User).filter(User.username == username).first()
             if not user or not bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8')):
-                raise ValueError("Invalid email or password")
+                raise ValueError("Invalid username or password")
             return user
 
     @staticmethod
-    def get_user_by_email(email: str) -> Optional[User]:
-        """ค้นหาผู้ใช้ตาม email"""
+    def get_user_by_username(username: str) -> Optional[User]:
+        """ค้นหาผู้ใช้ตาม username"""
         with SessionLocal() as db:
             try:
-                return db.query(User).filter(User.email == email).one()
+                return db.query(User).filter(User.usernamel == username).one()
             except NoResultFound:
                 return None
 
