@@ -1,4 +1,4 @@
-from sqlalchemy import JSON, Column, Integer, String, DateTime, Boolean, ForeignKey, Enum, UniqueConstraint, CheckConstraint, Text
+from sqlalchemy import JSON, Column, DECIMAL, Integer, String, DateTime, Date, Time, Boolean, ForeignKey, Enum, UniqueConstraint, CheckConstraint, Text
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.sql import func
 import enum
