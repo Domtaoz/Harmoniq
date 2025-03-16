@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from database import SessionLocal
+from graphql_app.database import SessionLocal
 from graphql_app.model import Zone
 from typing import List
 

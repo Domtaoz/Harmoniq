@@ -25,12 +25,6 @@ class User(Base):
     def __repr__(self):
         return f"<User(id={self.id}, display_name={self.display_name}, email={self.email})>"
 
-from sqlalchemy import Column, Integer, String, ForeignKey, Enum, DECIMAL, JSON
-from sqlalchemy.orm import declarative_base
-import enum
-
-Base = declarative_base()
-
 class SeatStatus(enum.Enum):
     available = "available"
     booked = "booked"
@@ -43,9 +37,9 @@ class BookingStatus(enum.Enum):
 class Concert(Base):
     __tablename__ = "concerts"
     concert_id = Column(Integer, primary_key=True, index=True)
-    concert_name = Column(String, nullable=False)
-    band_id = Column(Integer, ForeignKey("bands.band_id"), nullable=False)
-    concert_type = Column(String, nullable=False)
+    concert_name = Column(String(255), nullable=False)
+    band_name = Column(String(255), nullable=False)
+    concert_type = Column(String(50), nullable=False)
 
 class Band(Base):
     __tablename__ = "bands"
@@ -57,7 +51,7 @@ class Zone(Base):
     __tablename__ = "zones"
     zone_id = Column(Integer, primary_key=True, index=True)
     concert_id = Column(Integer, ForeignKey("concerts.concert_id"), nullable=False)
-    zone_name = Column(String, nullable=False)
+    zone_name = Column(String(50), nullable=False)
     price = Column(DECIMAL, nullable=False)
 
 class Seat(Base):
@@ -65,13 +59,13 @@ class Seat(Base):
     seat_id = Column(Integer, primary_key=True, index=True)
     concert_id = Column(Integer, ForeignKey("concerts.concert_id"), nullable=False)
     zone_id = Column(Integer, ForeignKey("zones.zone_id"), nullable=False)
-    seat_number = Column(String, nullable=False)
+    seat_number = Column(String(10), nullable=False)
     seat_status = Column(Enum(SeatStatus), default=SeatStatus.available)
 
 class Booking(Base):
     __tablename__ = "bookings"
     booking_id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)  # ผู้ที่จอง
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     concert_id = Column(Integer, ForeignKey("concerts.concert_id"), nullable=False)
     zone_id = Column(Integer, ForeignKey("zones.zone_id"), nullable=False)
     seat_id = Column(Integer, ForeignKey("seats.seat_id"), nullable=False)
@@ -81,6 +75,6 @@ class Ticket(Base):
     __tablename__ = "tickets"
     ticket_id = Column(Integer, primary_key=True, index=True)
     booking_id = Column(Integer, ForeignKey("bookings.booking_id"), nullable=False)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)  # เจ้าของตั๋ว
-    ticket_code = Column(String, unique=True, nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    ticket_code = Column(String(20), unique=True, nullable=False)
 
