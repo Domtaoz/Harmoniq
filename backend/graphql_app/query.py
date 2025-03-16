@@ -80,12 +80,15 @@ class Query:
         bookings = BookingGateway.get_bookings_by_user(user_id)
         return [
             BookingDetailType(
-                booking_id=booking.booking_id,
-                user_id=booking.user_id,
-                concert_id=booking.concert_id,
-                schedule_id=booking.schedule_id,
-                status=booking.status
-            ) for booking in bookings
+                booking_id=b["booking_id"],
+                user_id=b["user_id"],
+                concert_name=b["concert_name"],
+                zone_name=b["zone_name"],
+                seat_number=b["seat_number"],
+                seat_count=b["seat_count"],
+                total_price=b["total_price"],
+                status=b["status"]
+            ) for b in bookings
         ]
 
     @strawberry.field
@@ -93,9 +96,15 @@ class Query:
         tickets = TicketGateway.get_tickets_by_user(user_id)
         return [
             TicketDetailType(
-                ticket_id=ticket.ticket_id,
-                booking_id=ticket.booking_id,
-                ticket_code=ticket.ticket_code,
-                qr_code=ticket.qr_code
-            ) for ticket in tickets
+                ticket_id=t["ticket_id"],
+                booking_id=t["booking_id"],
+                ticket_code=t["ticket_code"],
+                qr_code=t["qr_code"],
+                concert_name=t["concert_name"],
+                zone_name=t["zone_name"],
+                seat_number=t["seat_number"],
+                show_date=t["show_date"],
+                start_time=t["start_time"],
+                end_time=t["end_time"]
+            ) for t in tickets
         ]

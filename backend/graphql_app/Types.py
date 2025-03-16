@@ -92,8 +92,11 @@ class SeatDetailType:
 class BookingDetailType:
     booking_id: int
     user_id: int
-    concert_id: int
-    schedule_id: int
+    concert_name: str
+    zone_name: str
+    seat_number: str
+    seat_count: int
+    total_price: float
     status: str  # pending, confirmed, cancelled
     
 
@@ -103,3 +106,9 @@ class TicketDetailType:
     booking_id: int
     ticket_code: str
     qr_code: str
+    concert_name: str
+    zone_name: str
+    seat_number: str
+    show_date: str
+    start_time: str
+    end_time: str
