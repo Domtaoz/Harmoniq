@@ -79,3 +79,11 @@ class SeatType:
     zone_id: int
     seat_number: str
     status: str
+    
+@strawberry.type
+class SeatDetailType:
+    seat_id: int
+    concert_name: str
+    zone_name: str
+    seat_number: str
+    status: str

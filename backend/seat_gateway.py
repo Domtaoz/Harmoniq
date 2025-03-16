@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from graphql_app.database import SessionLocal
-from graphql_app.model import Seat
+from graphql_app.model import Seat, Concert, Zone
 from typing import Optional, List
 
 class SeatGateway:
@@ -27,3 +27,15 @@ class SeatGateway:
                 db.commit()
                 return seat
         return None
+    
+    def get_seats_by_concert_zone(cls, concert_name: str, zone_name: str) -> List[Seat]:
+        """ดึงข้อมูลที่นั่งทั้งหมดตามชื่อคอนเสิร์ตและโซน"""
+        with SessionLocal() as db:
+            seats = (
+                db.query(Seat)
+                .join(Concert, Seat.concert_id == Concert.concert_id)
+                .join(Zone, Seat.zone_id == Zone.zone_id)
+                .filter(Concert.concert_name == concert_name, Zone.zone_name == zone_name)
+                .all()
+            )
+            return seats
