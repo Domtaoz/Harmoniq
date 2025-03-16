@@ -39,3 +39,24 @@ class SeatGateway:
                 .all()
             )
             return seats
+
+    @classmethod
+    def update_seat_status(cls, concert_name: str, zone_name: str, seat_number: str, new_status: str) -> Optional[Seat]:
+        """เปลี่ยนสถานะที่นั่งตาม `concert_name`, `zone_name`, และ `seat_number`"""
+        with SessionLocal() as db:
+            seat = (
+                db.query(Seat)
+                .join(Concert, Seat.concert_id == Concert.concert_id)
+                .join(Zone, Seat.zone_id == Zone.zone_id)
+                .filter(
+                    Concert.concert_name == concert_name,
+                    Zone.zone_name == zone_name,
+                    Seat.seat_number == seat_number
+                )
+                .first()
+            )
+            if seat:
+                seat.status = new_status
+                db.commit()
+                return seat
+        return None

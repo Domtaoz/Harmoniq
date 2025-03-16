@@ -7,7 +7,7 @@ from schedule_gateway import ScheduleGateway
 from booking_gateway import BookingGateway
 from ticket_gateway import TicketGateway
 from seat_gateway import SeatGateway
-from .Types import ConcertType, ScheduleType, BookingType, TicketType, SeatType
+from .Types import ConcertType, ScheduleType, BookingType, TicketType, SeatType, SeatDetailType
 from typing import Optional
 
 @strawberry.type
@@ -121,3 +121,16 @@ class Mutation:
     @strawberry.mutation
     def update_seat_status(self, seat_id: int, new_status: str) -> SeatType:
         return SeatGateway.update_seat_status(seat_id, new_status)
+    
+    @strawberry.mutation
+    def update_seat_status(self, concert_name: str, zone_name: str, seat_number: str, new_status: str) -> SeatDetailType:
+        seat = SeatGateway.update_seat_status(concert_name, zone_name, seat_number, new_status)
+        if seat:
+            return SeatDetailType(
+                seat_id=seat.seat_id,
+                concert_name=concert_name,
+                zone_name=zone_name,
+                seat_number=seat.seat_number,
+                status=seat.status
+            )
+        return None
