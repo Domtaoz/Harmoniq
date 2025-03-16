@@ -5,7 +5,6 @@ from .model import User, Concert, Booking, Seat
 from .Types import UserType, LoginResponse
 from user_gateway import UserGateway
 from concert_gateway import ConcertGateway
-from schedule_gateway import ScheduleGateway
 from booking_gateway import BookingGateway
 from ticket_gateway import TicketGateway
 from seat_gateway import SeatGateway
