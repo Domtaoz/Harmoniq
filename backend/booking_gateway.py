@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
-from .graphql_app.database import SessionLocal
-from .graphql_app.model import Booking
+from graphql_app.database import SessionLocal
+from graphql_app.model import Booking
 from typing import Optional, List
 
 class BookingGateway:

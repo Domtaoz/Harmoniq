@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
-from .graphql_app.database import SessionLocal
-from.graphql_app.model import Schedule
+from graphql_app.database import SessionLocal
+from graphql_app.model import Schedule
 from typing import Optional, List
 from datetime import date, time
 

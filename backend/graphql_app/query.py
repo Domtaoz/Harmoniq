@@ -1,12 +1,12 @@
 import strawberry
 from typing import List, Optional
 from user_gateway import UserGateway
-from model import User, Band, Concert, Schedule, Booking, Ticket
+from .model import User, Band, Concert, Schedule, Booking, Ticket
 from concert_gateway import ConcertGateway
 from schedule_gateway import ScheduleGateway
 from booking_gateway import BookingGateway
 from ticket_gateway import TicketGateway
-from types import UserType, ConcertType, ScheduleType, BookingType, TicketType
+from .Types import UserType, ConcertType, ScheduleType, BookingType, TicketType
 
 @strawberry.type
 class Query:
