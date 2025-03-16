@@ -6,7 +6,8 @@ from concert_gateway import ConcertGateway
 from schedule_gateway import ScheduleGateway
 from booking_gateway import BookingGateway
 from ticket_gateway import TicketGateway
-from .Types import ConcertType, ScheduleType, BookingType, TicketType
+from seat_gateway import SeatGateway
+from .Types import ConcertType, ScheduleType, BookingType, TicketType, SeatType
 from typing import Optional
 
 @strawberry.type
@@ -116,3 +117,7 @@ class Mutation:
     @strawberry.mutation
     def delete_schedule(self, schedule_id: int) -> bool:
         return ScheduleGateway.delete_schedule(schedule_id)
+    
+    @strawberry.mutation
+    def update_seat_status(self, seat_id: int, new_status: str) -> SeatType:
+        return SeatGateway.update_seat_status(seat_id, new_status)

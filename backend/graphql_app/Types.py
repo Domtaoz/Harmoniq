@@ -71,3 +71,11 @@ class TicketType:
     booking_id: int
     ticket_code: str
     qr_code: str
+    
+@strawberry.type
+class SeatType:
+    seat_id: int
+    concert_id: int
+    zone_id: int
+    seat_number: str
+    status: str

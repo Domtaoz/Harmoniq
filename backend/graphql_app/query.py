@@ -6,7 +6,8 @@ from concert_gateway import ConcertGateway
 from schedule_gateway import ScheduleGateway
 from booking_gateway import BookingGateway
 from ticket_gateway import TicketGateway
-from .Types import UserType, ConcertType, ScheduleType, BookingType, TicketType
+from seat_gateway import SeatGateway
+from .Types import UserType, ConcertType, ScheduleType, BookingType, TicketType, SeatType
 
 @strawberry.type
 class Query:
@@ -51,3 +52,11 @@ class Query:
     @strawberry.field
     def tickets(self) -> List[TicketType]:
         return TicketGateway.get_tickets()
+    
+    @strawberry.field
+    def get_seats_by_concert(self, concert_id: int) -> List[SeatType]:
+        return SeatGateway.get_seats_by_concert(concert_id)
+
+    @strawberry.field
+    def get_seat_status(self, seat_id: int) -> Optional[str]:
+        return SeatGateway.get_seat_status(seat_id)
