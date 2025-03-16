@@ -1,8 +1,29 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, JSON, Date, Time, Enum, DECIMAL
+from sqlalchemy import JSON, Column, Integer, String, DateTime, Boolean, ForeignKey, Enum, UniqueConstraint, CheckConstraint, Text
 from sqlalchemy.orm import declarative_base
+from sqlalchemy.sql import func
 import enum
 
 Base = declarative_base()
+
+class User(Base):
+    __tablename__ = 'users'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    display_name = Column(String(255), nullable=True)
+    username = Column(String(255), unique=True, nullable=False)
+    password = Column(String(255), nullable=False)
+    password_updated_at = Column(DateTime, nullable=False, default=func.now(), onupdate=func.now())
+    reset_token = Column(String(100), nullable=True, default=None)
+    created_at = Column(DateTime, nullable=False, default=func.now())
+
+    profile_picture_url = Column(
+        String(500), 
+        nullable=False, 
+        default="https://t4.ftcdn.net/jpg/00/64/67/63/360_F_64676383_LdbmhiNM6Ypzb3FM4PPuFP9rHe7ri8Ju.webp"
+    )
+
+    def __repr__(self):
+        return f"<User(id={self.id}, display_name={self.display_name}, email={self.email})>"
 
 class SeatStatus(enum.Enum):
     available = "available"
@@ -12,12 +33,6 @@ class BookingStatus(enum.Enum):
     pending = "pending"
     confirmed = "confirmed"
     cancelled = "cancelled"
-
-class User(Base):
-    __tablename__ = "users"
-    id = Column(Integer, primary_key=True, index=True)
-    username = Column(String, unique=True, nullable=False)
-    password = Column(String, nullable=False)
 
 class Band(Base):
     __tablename__ = "bands"
