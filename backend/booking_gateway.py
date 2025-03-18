@@ -95,7 +95,9 @@ class BookingGateway:
         with SessionLocal() as db:
             # ดึงราคาของโซน
             zone_price = db.query(Zone.price).filter(Zone.zone_id == zone_id).scalar()
-        
+            concert = db.query(Concert).filter(Concert.concert_id == concert_id).first()
+            zone = db.query(Zone).filter(Zone.zone_id == zone_id).first()
+            
             # คำนวณราคาทั้งหมดของการจอง
             total_price = zone_price * seat_count
 
@@ -114,9 +116,9 @@ class BookingGateway:
             return {
                 "booking_id": new_booking.booking_id,
                 "user_id": new_booking.user_id,
-                "concert_id": new_booking.concert_id,
-                "zone_id": new_booking.zone_id,
-                "seat_ids": seat_ids,
+                "concert_name": concert.concert_name,
+                "zone_name": zone.zone_name,
+                "seat_numbers": [str(seat_id) for seat_id in seat_ids],  # ✅ คืนค่า seat_numbers เป็น list
                 "seat_count": seat_count,
                 "total_price": float(total_price),
                 "booking_status": new_booking.booking_status
