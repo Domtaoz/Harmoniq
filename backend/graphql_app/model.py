@@ -68,7 +68,7 @@ class Booking(Base):
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     concert_id = Column(Integer, ForeignKey("concerts.concert_id"), nullable=False)
     zone_id = Column(Integer, ForeignKey("zones.zone_id"), nullable=False)
-    seat_id = Column(Integer, ForeignKey("seats.seat_id"), nullable=False)
+    seat_number = Column(String(10), nullable=False)
     booking_status = Column(Enum(BookingStatus), default=BookingStatus.pending)
 
 class Ticket(Base):
