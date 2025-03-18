@@ -89,11 +89,11 @@ class UserGateway:
             return user
 
     @staticmethod
-    def get_user_by_username(username: str) -> Optional[User]:
+    def get_user_by_email(username: str) -> Optional[User]:
         """ค้นหาผู้ใช้ตาม username"""
         with SessionLocal() as db:
             try:
-                return db.query(User).filter(User.usernamel == username).one()
+                return db.query(User).filter(User.username == username).one()
             except NoResultFound:
                 return None
 
