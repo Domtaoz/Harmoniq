@@ -5,19 +5,11 @@ from typing import Optional, List
 
 class ConcertGateway:
     @classmethod
-    def get_concerts(cls) -> List[dict]:
+    def get_concerts(cls) -> List[Concert]:
         """ดึงข้อมูลคอนเสิร์ตทั้งหมด"""
         with SessionLocal() as db:
-            concerts = db.query(Concert).all()
-            return [
-                {
-                    "concert_id": c.concert_id,
-                    "concert_name": c.concert_name,
-                    "band_name": c.band_name,
-                    "concert_type": c.concert_type
-                }
-                for c in concerts
-            ]
+            return db.query(Concert).all()
+
 
     @classmethod
     def get_concert_by_id(cls, concert_id: int) -> Optional[dict]:
