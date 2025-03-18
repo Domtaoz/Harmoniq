@@ -36,7 +36,7 @@ class ZoneType:
 class SeatType:
     seat_id: int
     concert_id: int
-    zone_id: int
+    zone_name: str  
     seat_number: str
     seat_status: str
 
