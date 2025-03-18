@@ -115,8 +115,7 @@ class Query:
                 concert_name=t["concert_name"],
                 zone_name=t["zone_name"],
                 seat_number=t["seat_number"],
-                ticket_code=t["ticket_code"],
-                qr_code=t["qr_code"]
+                ticket_code=t["ticket_code"]
             ) for t in tickets
         ]
         

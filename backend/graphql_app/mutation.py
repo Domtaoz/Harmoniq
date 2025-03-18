@@ -165,13 +165,11 @@ class Mutation:
 
         for seat_number in booking["seat_numbers"]:
             ticket_code = "".join(random.choices(string.ascii_uppercase + string.digits, k=10))
-            qr_code = "".join(random.choices(string.ascii_letters + string.digits, k=20))  # ✅ สร้าง QR Code แบบสุ่ม
 
             ticket = TicketGateway.create_ticket(
                 booking_id=booking_id,
                 user_id=booking["user_id"],
                 ticket_code=ticket_code,
-                qr_code=qr_code,  # ✅ เพิ่ม QR Code
                 concert_name=booking["concert_name"],
                 zone_name=booking["zone_name"],
                 seat_number=seat_number
@@ -182,7 +180,6 @@ class Mutation:
                 booking_id=ticket["booking_id"],
                 user_id=ticket["user_id"],
                 ticket_code=ticket["ticket_code"],
-                qr_code=ticket["qr_code"],  # ✅ แสดง QR Code
                 concert_name=ticket["concert_name"],
                 zone_name=ticket["zone_name"],
                 seat_number=ticket["seat_number"]

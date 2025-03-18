@@ -73,8 +73,9 @@ class Booking(Base):
 
 class Ticket(Base):
     __tablename__ = "tickets"
+
     ticket_id = Column(Integer, primary_key=True, index=True)
     booking_id = Column(Integer, ForeignKey("bookings.booking_id"), nullable=False)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    ticket_code = Column(String(20), unique=True, nullable=False)
+    ticket_code = Column(String, unique=True, nullable=False)
 
