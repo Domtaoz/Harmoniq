@@ -115,21 +115,23 @@ class Mutation:
         return None
 
     @strawberry.mutation
-    def create_booking(self, user_id: int, concert_id: int, zone_id: int, seat_ids: List[int]) -> Optional[BookingType]:
+    def create_booking(self, user_id: int, concert_id: int, zone_id: int, seat_count: int, seat_ids: List[int]) -> Optional[BookingDetailType]:
         """สร้างการจองและระบุจำนวนที่นั่งที่จอง"""
-        seat_count = len(seat_ids)  # นับจำนวนที่นั่งที่จอง
-        booking = BookingGateway.create_booking(user_id, concert_id, zone_id, seat_ids, seat_count)
+        if seat_count != len(seat_ids):
+            raise ValueError("seat_count ต้องตรงกับจำนวน seat_ids ที่เลือก")
+
+        booking = BookingGateway.create_booking(user_id, concert_id, zone_id, seat_count, seat_ids)
     
         if booking:
             return BookingType(
                 booking_id=booking["booking_id"],
                 user_id=booking["user_id"],
-                concert_id=booking["concert_id"],
-                zone_id=booking["zone_id"],
-                seat_ids=booking["seat_ids"],
+                concert_name=booking["concert_name"],
+                zone_name=booking["zone_name"],
+                seat_number=", ".join(booking["seat_numbers"]),
                 seat_count=booking["seat_count"],  # จำนวนที่นั่งที่จอง
                 total_price=booking["total_price"],  # ราคาทั้งหมดที่ต้องจ่าย
-                booking_status=booking["booking_status"]
+                status=booking["booking_status"]
             )
         return None
     

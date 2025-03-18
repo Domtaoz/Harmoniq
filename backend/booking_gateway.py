@@ -90,11 +90,13 @@ class BookingGateway:
         return None
     
     @classmethod
-    def create_booking(cls, user_id: int, concert_id: int, zone_id: int, seat_ids: List[int], seat_count: int) -> Optional[dict]:
+    def create_booking(cls, user_id: int, concert_id: int, zone_id: int, seat_count: int, seat_ids: List[int]) -> Optional[dict]:
         """สร้างการจองและคำนวณราคาตามจำนวนที่นั่ง"""
         with SessionLocal() as db:
-            # คำนวณราคาทั้งหมดของการจอง
+            # ดึงราคาของโซน
             zone_price = db.query(Zone.price).filter(Zone.zone_id == zone_id).scalar()
+        
+            # คำนวณราคาทั้งหมดของการจอง
             total_price = zone_price * seat_count
 
             # สร้างข้อมูลการจองใหม่
@@ -102,7 +104,7 @@ class BookingGateway:
                 user_id=user_id,
                 concert_id=concert_id,
                 zone_id=zone_id,
-                seat_id=seat_ids[0],  # เลือกที่นั่งแรกในลิสต์เป็นตัวแทน
+                seat_id=seat_ids[0],  # เลือกที่นั่งแรกเป็นตัวแทน
                 booking_status="pending"
             )
             db.add(new_booking)
