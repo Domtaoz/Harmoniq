@@ -126,6 +126,7 @@ class Mutation:
             return BookingType(
                 booking_id=booking["booking_id"],
                 user_id=booking["user_id"],
+                concert_id=booking["concert_id"],  # ✅ เพิ่ม concert_id
                 concert_name=booking["concert_name"],
                 zone_name=booking["zone_name"],
                 seat_number=", ".join(booking["seat_numbers"]),

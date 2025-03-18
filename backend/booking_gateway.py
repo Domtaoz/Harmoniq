@@ -134,6 +134,7 @@ class BookingGateway:
             return {
                 "booking_id": new_booking.booking_id,
                 "user_id": new_booking.user_id,
+                "concert_id": new_booking.concert_id,
                 "concert_name": concert.concert_name,
                 "zone_name": zone.zone_name,
                 "seat_numbers": [str(seat_id) for seat_id in seat_ids],  # ✅ คืนค่า seat_numbers เป็น list
