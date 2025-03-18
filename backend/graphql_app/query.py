@@ -98,7 +98,7 @@ class Query:
                 concert_id=b["concert_id"],  
                 concert_name=b["concert_name"],
                 zone_name=b["zone_name"],
-                seat_number=b["seat_number"],
+                seat_number=", ".join(b["seat_numbers"]),
                 seat_count=b["seat_count"],
                 total_price=b["total_price"],
                 status=b["booking_status"]

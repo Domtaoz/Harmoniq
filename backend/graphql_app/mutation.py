@@ -1,7 +1,7 @@
 import strawberry
 import random
 import string
-from .model import User, Concert, Booking, Seat
+from .model import User, Concert, Booking, Seat, Zone
 from .Types import UserType, LoginResponse
 from user_gateway import UserGateway
 from concert_gateway import ConcertGateway
@@ -10,6 +10,9 @@ from ticket_gateway import TicketGateway
 from seat_gateway import SeatGateway
 from .Types import BookingType, TicketType, SeatType
 from typing import Optional, List
+from graphql_app.database import SessionLocal
+from sqlalchemy.sql import func
+
 
 @strawberry.type
 class Mutation:
@@ -115,26 +118,34 @@ class Mutation:
         return None
 
     @strawberry.mutation
-    def create_booking(self, user_id: int, concert_id: int, zone_id: int, seat_count: int, seat_ids: List[int]) -> Optional[BookingType]:
-        """สร้างการจองและระบุจำนวนที่นั่งที่จอง"""
-        if seat_count != len(seat_ids):
-            raise ValueError("seat_count ต้องตรงกับจำนวน seat_ids ที่เลือก")
+    def create_booking(self, user_id: int, concert_id: int, zone_id: int, seat_ids: List[int]) -> Optional[BookingType]:
+        """สร้างการจองโดยใช้ seat_id"""
+        with SessionLocal() as db:
+            total_price = db.query(func.sum(Zone.price)).filter(Zone.zone_id == zone_id).scalar() * len(seat_ids)
+        
+            for seat_id in seat_ids:
+                new_booking = Booking(
+                    user_id=user_id,
+                    concert_id=concert_id,
+                    zone_id=zone_id,
+                    seat_id=seat_id,  # ✅ ใช้ seat_id แทน seat_number
+                    booking_status="pending"
+                )
+                db.add(new_booking)
+        
+            db.commit()
 
-        booking = BookingGateway.create_booking(user_id, concert_id, zone_id, seat_count, seat_ids)
-    
-        if booking:
             return BookingType(
-                booking_id=booking["booking_id"],
-                user_id=booking["user_id"],
-                concert_id=booking["concert_id"],  
-                concert_name=booking["concert_name"],
-                zone_name=booking["zone_name"],
-                seat_number=", ".join(map(str, booking["seat_numbers"])),
-                seat_count=booking["seat_count"],  
-                total_price=booking["total_price"],  
-                status=booking["booking_status"]
+                booking_id=new_booking.booking_id,
+                user_id=new_booking.user_id,
+                concert_id=new_booking.concert_id,
+                    concert_name=db.query(Concert.concert_name).filter(Concert.concert_id == concert_id).scalar(),
+                zone_name=db.query(Zone.zone_name).filter(Zone.zone_id == zone_id).scalar(),
+                seat_number=", ".join([str(s) for s in seat_ids]),
+                seat_count=len(seat_ids),
+                total_price=float(total_price),
+                status=new_booking.booking_status
             )
-        return None
     
     @strawberry.mutation
     def update_booking_status(self, booking_id: int, new_status: str) -> Optional[BookingType]:

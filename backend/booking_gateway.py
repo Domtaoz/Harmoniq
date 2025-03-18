@@ -56,8 +56,8 @@ class BookingGateway:
                     Booking.concert_id, 
                     Concert.concert_name,
                     Zone.zone_name,
-                    func.group_concat(Seat.seat_number).label("seat_numbers"),
-                    func.count(Seat.seat_id).label("seat_count"),
+                    Seat.seat_number,
+                    func.count(Booking.booking_id).label("seat_count"),
                     func.sum(Zone.price).label("total_price")
                 )
                 .join(Concert, Booking.concert_id == Concert.concert_id)
@@ -74,7 +74,7 @@ class BookingGateway:
                     "concert_id": b.concert_id,
                     "concert_name": b.concert_name,
                     "zone_name": b.zone_name,
-                    "seat_numbers": b.seat_numbers.split(",") if b.seat_numbers else [],
+                    "seat_numbers": [b.seat_number],
                     "seat_count": b.seat_count,
                     "total_price": float(b.total_price),
                     "booking_status": b.booking_status
