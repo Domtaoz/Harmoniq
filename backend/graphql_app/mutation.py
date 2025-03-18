@@ -139,18 +139,21 @@ class Mutation:
     def update_booking_status(self, booking_id: int, new_status: str) -> Optional[BookingType]:
         """เปลี่ยนสถานะการจอง"""
         if new_status == "cancelled":
-            BookingGateway.delete_booking(booking_id)  # ลบการจองถ้ายกเลิก
-            return None
+            success = BookingGateway.delete_booking(booking_id)  # ✅ ลบการจองถ้าสถานะเป็น cancelled
+            return None if success else BookingType(booking_id=booking_id, status="not found")
+
         else:
             booking = BookingGateway.update_booking_status(booking_id, new_status)
             if booking:
                 return BookingType(
-                    booking_id=booking["booking_id"],
-                    user_id=booking["user_id"],
-                    concert_id=booking["concert_id"],
-                    zone_id=booking["zone_id"],
-                    seat_id=booking["seat_id"],
-                    booking_status=booking["booking_status"]
+                    booking_id=booking.booking_id,
+                    user_id=booking.user_id,
+                    concert_name=booking.concert_name,
+                    zone_name=booking.zone_name,
+                    seat_number=", ".join(booking.seat_numbers),
+                    seat_count=booking.seat_count,
+                    total_price=booking.total_price,
+                    status=booking.booking_status
                 )
         return None
 

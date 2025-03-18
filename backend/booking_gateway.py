@@ -137,3 +137,16 @@ class BookingGateway:
                 "total_price": float(total_price),
                 "booking_status": new_booking.booking_status
             }
+            
+    @classmethod
+    def delete_booking(cls, booking_id: int) -> bool:
+        """ลบการจองเมื่อถูกยกเลิก"""
+        with SessionLocal() as db:
+            booking = db.query(Booking).filter(Booking.booking_id == booking_id).first()
+            if not booking:
+                return False
+
+            # ลบ booking ออกจาก Database
+            db.delete(booking)
+            db.commit()
+            return True  # ✅ คืนค่า True เมื่อสำเร็จ
