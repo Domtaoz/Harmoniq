@@ -33,6 +33,20 @@ class Query:
                 profile_picture_url=user.profile_picture_url 
             )
         return None
+    
+    @strawberry.field
+    def get_concerts(self) -> List[ConcertType]:
+        """ดึงข้อมูลคอนเสิร์ตทั้งหมด"""
+        concerts = ConcertGateway.get_concerts()
+        return [
+            ConcertType(
+                concert_id=c.concert_id,
+                concert_name=c.concert_name,
+                band_name=c.band_name,
+                concert_type=c.concert_type
+            ) for c in concerts
+        ]
+
 
     @strawberry.field
     def get_concert_by_id(self, concert_id: int) -> Optional[ConcertType]:
