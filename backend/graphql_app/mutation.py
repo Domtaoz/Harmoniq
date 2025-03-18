@@ -129,7 +129,7 @@ class Mutation:
                 concert_id=booking["concert_id"],  
                 concert_name=booking["concert_name"],
                 zone_name=booking["zone_name"],
-                seat_number=", ".join(booking["seat_numbers"]),
+                seat_number=", ".join(map(str, booking["seat_numbers"])),
                 seat_count=booking["seat_count"],  
                 total_price=booking["total_price"],  
                 status=booking["booking_status"]

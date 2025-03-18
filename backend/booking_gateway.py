@@ -124,7 +124,7 @@ class BookingGateway:
                 user_id=user_id,
                 concert_id=concert_id,
                 zone_id=zone_id,
-                seat_number=", ".join(seat_numbers),  # เลือกที่นั่งแรกเป็นตัวแทน
+                seat_number=", ".join(map(str, seat_numbers)),  
                 booking_status="pending"
             )
             db.add(new_booking)
