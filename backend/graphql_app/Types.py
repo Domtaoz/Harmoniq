@@ -48,7 +48,7 @@ class BookingType:
     concert_name: str
     zone_name: str
     seat_number: str  
-    seat_count: int   
+    seat_count: int 
     total_price: float 
     status: str  
 

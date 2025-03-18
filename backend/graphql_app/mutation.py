@@ -1,7 +1,7 @@
 import strawberry
 import random
 import string
-from .model import User, Concert, Booking, Seat, Zone
+from .model import User, Concert, Booking, Seat, Zone, BookingSeat, Ticket
 from .Types import UserType, LoginResponse
 from user_gateway import UserGateway
 from concert_gateway import ConcertGateway
@@ -119,37 +119,45 @@ class Mutation:
 
     @strawberry.mutation
     def create_booking(self, user_id: int, concert_id: int, zone_id: int, seat_count: int, seat_ids: List[int]) -> Optional[BookingType]:
-        """สร้างการจองโดยใช้ seat_id และระบุจำนวนที่นั่ง"""
-    
+        """สร้างการจองและบันทึกหลาย seat_id ลง booking_seats"""
+
         if seat_count != len(seat_ids):
             raise ValueError("seat_count ต้องตรงกับจำนวน seat_ids ที่เลือก")
 
         with SessionLocal() as db:
-            total_price = db.query(func.sum(Zone.price)).filter(Zone.zone_id == zone_id).scalar() * seat_count
+        # สร้าง Booking ใหม่
+            new_booking = Booking(
+            user_id=user_id,
+            concert_id=concert_id,
+            zone_id=zone_id,
+            booking_status="pending"
+        )
+        db.add(new_booking)
+        db.commit()
+        db.refresh(new_booking)
 
-            for seat_id in seat_ids:
-                new_booking = Booking(
-                    user_id=user_id,
-                    concert_id=concert_id,
-                    zone_id=zone_id,
-                    seat_id=seat_id,  # ✅ ใช้ seat_id แทน seat_number
-                    booking_status="pending"
-                )
-                db.add(new_booking)
-
-            db.commit()
-
-            return BookingType(
+        # เพิ่มที่นั่งไปที่ booking_seats
+        for seat_id in seat_ids:
+            new_booking_seat = BookingSeat(
                 booking_id=new_booking.booking_id,
-                user_id=new_booking.user_id,
-                concert_id=new_booking.concert_id,
-                concert_name=db.query(Concert.concert_name).filter(Concert.concert_id == concert_id).scalar(),
-                zone_name=db.query(Zone.zone_name).filter(Zone.zone_id == zone_id).scalar(),
-                seat_number=", ".join([str(s) for s in seat_ids]),
-                seat_count=seat_count,  # ✅ เพิ่ม seat_count
-                total_price=float(total_price),
-                status=new_booking.booking_status
+                seat_id=seat_id
             )
+            db.add(new_booking_seat)
+
+        db.commit()
+
+        return BookingType(
+            booking_id=new_booking.booking_id,
+            user_id=new_booking.user_id,
+            concert_id=new_booking.concert_id,
+            concert_name=db.query(Concert.concert_name).filter(Concert.concert_id == concert_id).scalar(),
+            zone_name=db.query(Zone.zone_name).filter(Zone.zone_id == zone_id).scalar(),
+            seat_number=", ".join([str(s) for s in seat_ids]),  # ✅ ให้ seat_number เก็บเป็น string
+            seat_count=seat_count,
+            total_price=db.query(func.sum(Zone.price)).filter(Zone.zone_id == zone_id).scalar() * seat_count,
+            status=new_booking.booking_status
+        )
+
     
     @strawberry.mutation
     def update_booking_status(self, booking_id: int, new_status: str) -> Optional[BookingType]:
@@ -175,35 +183,42 @@ class Mutation:
 
     @strawberry.mutation
     def confirm_payment_and_generate_tickets(self, booking_id: int) -> List[TicketType]:
-        """เมื่อชำระเงินแล้ว เปลี่ยนสถานะการจอง และสร้างตั๋ว"""
+        """เปลี่ยนสถานะการจองและสร้างตั๋วเฉพาะที่นั่งที่จองไว้"""
+        with SessionLocal() as db:
+            booking = db.query(Booking).filter(Booking.booking_id == booking_id).first()
+            if not booking:
+                return []
+
+        booking.booking_status = "confirmed"
+        db.commit()
+
+        booked_seats = db.query(BookingSeat).filter(BookingSeat.booking_id == booking_id).all()
+
         tickets = []
-        booking = BookingGateway.update_booking_status(booking_id, "confirmed")
+        for seat in booked_seats:
+            seat_info = db.query(Seat).filter(Seat.seat_id == seat.seat_id).first()
 
-        if not booking:
-            return []  # ถ้าการจองไม่มีอยู่ ให้คืนค่าเป็น list ว่าง
-
-        for seat_number in booking["seat_numbers"]:
             ticket_code = "".join(random.choices(string.ascii_uppercase + string.digits, k=10))
-
-            ticket = TicketGateway.create_ticket(
+            new_ticket = Ticket(
                 booking_id=booking_id,
-                user_id=booking["user_id"],
-                ticket_code=ticket_code,
-                concert_name=booking["concert_name"],
-                zone_name=booking["zone_name"],
-                seat_number=seat_number
+                user_id=booking.user_id,
+                ticket_code=ticket_code
             )
-        
+            db.add(new_ticket)
+            db.commit()
+            db.refresh(new_ticket)
+
             tickets.append(TicketType(
-                ticket_id=ticket["ticket_id"],
-                booking_id=ticket["booking_id"],
-                user_id=ticket["user_id"],
-                ticket_code=ticket["ticket_code"],
-                concert_name=ticket["concert_name"],
-                zone_name=ticket["zone_name"],
-                seat_number=ticket["seat_number"]
+                ticket_id=new_ticket.ticket_id,
+                booking_id=new_ticket.booking_id,
+                user_id=new_ticket.user_id,
+                ticket_code=new_ticket.ticket_code,
+                concert_name=db.query(Concert.concert_name).filter(Concert.concert_id == booking.concert_id).scalar(),
+                zone_name=db.query(Zone.zone_name).filter(Zone.zone_id == booking.zone_id).scalar(),
+                seat_number=seat_info.seat_number
             ))
 
         return tickets
+
 
 

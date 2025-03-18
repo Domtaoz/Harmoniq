@@ -64,12 +64,19 @@ class Seat(Base):
 
 class Booking(Base):
     __tablename__ = "bookings"
+    
     booking_id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     concert_id = Column(Integer, ForeignKey("concerts.concert_id"), nullable=False)
     zone_id = Column(Integer, ForeignKey("zones.zone_id"), nullable=False)
+    booking_status = Column(Enum(BookingStatus), default=BookingStatus.pending)  # ✅ ลบ seat_id ออกจาก Booking
+
+class BookingSeat(Base):
+    __tablename__ = "booking_seats"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    booking_id = Column(Integer, ForeignKey("bookings.booking_id"), nullable=False)
     seat_id = Column(Integer, ForeignKey("seats.seat_id"), nullable=False)
-    booking_status = Column(Enum(BookingStatus), default=BookingStatus.pending)
 
 class Ticket(Base):
     __tablename__ = "tickets"

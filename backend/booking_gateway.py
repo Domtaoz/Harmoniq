@@ -2,7 +2,7 @@ import random
 import string
 from sqlalchemy.orm import Session
 from graphql_app.database import SessionLocal
-from graphql_app.model import Booking, Ticket, Concert, Zone, Seat
+from graphql_app.model import Booking, Ticket, Concert, Zone, Seat, BookingSeat
 from typing import Optional, List
 from sqlalchemy.sql import func
 
@@ -43,44 +43,46 @@ class BookingGateway:
                 }
             return None
 
-    
     @classmethod
     def get_bookings_by_user(cls, user_id: int) -> List[dict]:
         """ดึงข้อมูลการจองของผู้ใช้"""
         with SessionLocal() as db:
             bookings = (
-                db.query(
-                    Booking.booking_id,
-                    Booking.user_id,
-                    Booking.booking_status,
-                    Booking.concert_id, 
-                    Concert.concert_name,
-                    Zone.zone_name,
-                    Seat.seat_number,
-                    func.count(Booking.booking_id).label("seat_count"),
-                    func.sum(Zone.price).label("total_price")
-                )
-                .join(Concert, Booking.concert_id == Concert.concert_id)
-                .join(Zone, Booking.zone_id == Zone.zone_id)
-                .join(Seat, Booking.seat_id == Seat.seat_id)
-                .filter(Booking.user_id == user_id)
-                .group_by(Booking.booking_id)
-                .all()
+            db.query(
+                Booking.booking_id,
+                Booking.user_id,
+                Booking.booking_status,
+                Booking.concert_id, 
+                Concert.concert_name,
+                Zone.zone_name,
+                func.group_concat(Seat.seat_number).label("seat_numbers"),  # ✅ ใช้ GROUP_CONCAT รวม seat_number
+                func.count(BookingSeat.seat_id).label("seat_count"),
+                func.sum(Zone.price).label("total_price")
             )
-            return [
-                {
-                    "booking_id": b.booking_id,
-                    "user_id": b.user_id,
-                    "concert_id": b.concert_id,
-                    "concert_name": b.concert_name,
-                    "zone_name": b.zone_name,
-                    "seat_numbers": [b.seat_number],
-                    "seat_count": b.seat_count,
-                    "total_price": float(b.total_price),
-                    "booking_status": b.booking_status
-                }
-                for b in bookings
-            ]
+            .join(Concert, Booking.concert_id == Concert.concert_id)
+            .join(Zone, Booking.zone_id == Zone.zone_id)
+            .join(BookingSeat, Booking.booking_id == BookingSeat.booking_id)  # ✅ JOIN กับ booking_seats
+            .join(Seat, BookingSeat.seat_id == Seat.seat_id)  # ✅ ดึง seat_number จาก booking_seats
+            .filter(Booking.user_id == user_id)
+            .group_by(Booking.booking_id)
+            .all()
+        )
+        return [
+            {
+                "booking_id": b.booking_id,
+                "user_id": b.user_id,
+                "concert_id": b.concert_id,
+                "concert_name": b.concert_name,
+                "zone_name": b.zone_name,
+                "seat_numbers": b.seat_numbers.split(",") if b.seat_numbers else [],  # ✅ แปลง seat_numbers เป็น List
+                "seat_count": b.seat_count,
+                "total_price": float(b.total_price),
+                "booking_status": b.booking_status
+            }
+            for b in bookings
+        ]
+
+    
     
     @classmethod
     def confirm_payment(cls, booking_id: int) -> Optional[Ticket]:
