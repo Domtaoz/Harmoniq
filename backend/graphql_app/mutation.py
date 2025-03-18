@@ -118,11 +118,15 @@ class Mutation:
         return None
 
     @strawberry.mutation
-    def create_booking(self, user_id: int, concert_id: int, zone_id: int, seat_ids: List[int]) -> Optional[BookingType]:
-        """สร้างการจองโดยใช้ seat_id"""
+    def create_booking(self, user_id: int, concert_id: int, zone_id: int, seat_count: int, seat_ids: List[int]) -> Optional[BookingType]:
+        """สร้างการจองโดยใช้ seat_id และระบุจำนวนที่นั่ง"""
+    
+        if seat_count != len(seat_ids):
+            raise ValueError("seat_count ต้องตรงกับจำนวน seat_ids ที่เลือก")
+
         with SessionLocal() as db:
-            total_price = db.query(func.sum(Zone.price)).filter(Zone.zone_id == zone_id).scalar() * len(seat_ids)
-        
+            total_price = db.query(func.sum(Zone.price)).filter(Zone.zone_id == zone_id).scalar() * seat_count
+
             for seat_id in seat_ids:
                 new_booking = Booking(
                     user_id=user_id,
@@ -132,17 +136,17 @@ class Mutation:
                     booking_status="pending"
                 )
                 db.add(new_booking)
-        
+
             db.commit()
 
             return BookingType(
                 booking_id=new_booking.booking_id,
                 user_id=new_booking.user_id,
                 concert_id=new_booking.concert_id,
-                    concert_name=db.query(Concert.concert_name).filter(Concert.concert_id == concert_id).scalar(),
+                concert_name=db.query(Concert.concert_name).filter(Concert.concert_id == concert_id).scalar(),
                 zone_name=db.query(Zone.zone_name).filter(Zone.zone_id == zone_id).scalar(),
                 seat_number=", ".join([str(s) for s in seat_ids]),
-                seat_count=len(seat_ids),
+                seat_count=seat_count,  # ✅ เพิ่ม seat_count
                 total_price=float(total_price),
                 status=new_booking.booking_status
             )
