@@ -185,22 +185,27 @@ class Mutation:
     def confirm_payment_and_generate_tickets(self, booking_id: int) -> List[TicketType]:
         """เปลี่ยนสถานะการจองและสร้างตั๋วเฉพาะที่นั่งที่จองไว้"""
         with SessionLocal() as db:
+            # ดึง Booking
             booking = db.query(Booking).filter(Booking.booking_id == booking_id).first()
-            if not booking:
-                return []
+        if not booking:
+            return []
 
+        # ✅ เปลี่ยน booking_status เป็น "confirmed"
         booking.booking_status = "confirmed"
         db.commit()
 
+        # ✅ ดึงรายการที่นั่งจาก booking_seats
         booked_seats = db.query(BookingSeat).filter(BookingSeat.booking_id == booking_id).all()
 
         tickets = []
         for seat in booked_seats:
             seat_info = db.query(Seat).filter(Seat.seat_id == seat.seat_id).first()
 
+            # ✅ เปลี่ยน seat_status เป็น "booked"
             seat_info.seat_status = "booked"
             db.commit()
 
+            # ✅ สร้าง ticket_code และออกตั๋ว
             ticket_code = "".join(random.choices(string.ascii_uppercase + string.digits, k=10))
             new_ticket = Ticket(
                 booking_id=booking_id,
@@ -218,7 +223,7 @@ class Mutation:
                 ticket_code=new_ticket.ticket_code,
                 concert_name=db.query(Concert.concert_name).filter(Concert.concert_id == booking.concert_id).scalar(),
                 zone_name=db.query(Zone.zone_name).filter(Zone.zone_id == booking.zone_id).scalar(),
-                seat_number=seat_info.seat_number
+                seat_number=seat_info.seat_number  # ✅ แสดงเลขที่นั่งถูกต้อง
             ))
 
         return tickets

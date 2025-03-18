@@ -18,7 +18,7 @@ class TicketGateway:
 
     @classmethod
     def get_tickets_by_user(cls, user_id: int) -> List[dict]:
-        """ดึงข้อมูลตั๋วของผู้ใช้ที่ชำระเงินแล้ว"""
+        """ดึงข้อมูลตั๋วของผู้ใช้ที่ชำระเงินแล้วโดยตรงจาก Database"""
         with SessionLocal() as db:
             tickets = (
             db.query(
@@ -31,8 +31,8 @@ class TicketGateway:
                 Seat.seat_number
             )
             .join(Booking, Ticket.booking_id == Booking.booking_id)
-            .join(BookingSeat, Booking.booking_id == BookingSeat.booking_id)  # ✅ JOIN ผ่าน BookingSeat
-            .join(Seat, BookingSeat.seat_id == Seat.seat_id)  # ✅ ใช้ BookingSeat เพื่อดึง seat_number
+            .join(BookingSeat, Booking.booking_id == BookingSeat.booking_id)  # ✅ ใช้ BookingSeat เพื่อดึง seat_id
+            .join(Seat, BookingSeat.seat_id == Seat.seat_id)  # ✅ ดึง seat_number จาก seat_id
             .join(Concert, Booking.concert_id == Concert.concert_id)
             .join(Zone, Booking.zone_id == Zone.zone_id)
             .filter(Ticket.user_id == user_id)
@@ -46,7 +46,7 @@ class TicketGateway:
                 "ticket_code": t.ticket_code,
                 "concert_name": t.concert_name,
                 "zone_name": t.zone_name,
-                "seat_number": t.seat_number  # ✅ ดึง seat_number ถูกต้อง
+                "seat_number": t.seat_number  # ✅ ดึง seat_number โดยตรง
             }
             for t in tickets
         ]
