@@ -90,16 +90,18 @@ class Query:
 
     @strawberry.field
     def get_bookings_by_user(self, user_id: int) -> List[BookingType]:
-        """ดึงข้อมูลการจองของผู้ใช้"""
         bookings = BookingGateway.get_bookings_by_user(user_id)
         return [
             BookingType(
                 booking_id=b["booking_id"],
                 user_id=b["user_id"],
-                concert_id=b["concert_id"],
-                zone_id=b["zone_id"],
-                seat_id=b["seat_id"],
-                booking_status=b["booking_status"]
+                concert_id=b["concert_id"],  
+                concert_name=b["concert_name"],
+                zone_name=b["zone_name"],
+                seat_number=", ".join(b["seat_numbers"]),
+                seat_count=b["seat_count"],
+                total_price=b["total_price"],
+                status=b["booking_status"]
             ) for b in bookings
         ]
 

@@ -44,12 +44,13 @@ class SeatType:
 class BookingType:
     booking_id: int
     user_id: int
+    concert_id: int
     concert_name: str
     zone_name: str
-    seat_number: str  # แสดงเลขที่นั่งทั้งหมด
-    seat_count: int   # จำนวนที่จอง
-    total_price: float  # ราคาทั้งหมดที่ต้องจ่าย
-    status: str  # สถานะการจอง (pending, confirmed, cancelled)
+    seat_number: str  
+    seat_count: int   
+    total_price: float 
+    status: str  
 
 @strawberry.type
 class TicketType:
