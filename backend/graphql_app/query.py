@@ -91,14 +91,18 @@ class Query:
 
     @strawberry.field
     def get_tickets_by_user(self, user_id: int) -> List[TicketType]:
-        """ดึงข้อมูลตั๋วของผู้ใช้"""
+        """ดึงข้อมูลตั๋วของผู้ใช้ที่ชำระเงินแล้ว"""
         tickets = TicketGateway.get_tickets_by_user(user_id)
         return [
-            TicketType(
+            TicketDetailType(
                 ticket_id=t["ticket_id"],
                 booking_id=t["booking_id"],
                 user_id=t["user_id"],
-                ticket_code=t["ticket_code"]
+                concert_name=t["concert_name"],
+                zone_name=t["zone_name"],
+                seat_number=t["seat_number"],
+                ticket_code=t["ticket_code"],
+                qr_code=t["qr_code"]
             ) for t in tickets
         ]
         
