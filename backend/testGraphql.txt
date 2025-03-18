@@ -1,144 +1,164 @@
 query {
-  getUsers {
-    id
-    displayName
-    email
-    profilePictureUrl
-  }
-}
+#   getUsers {
+#     id
+#     displayName
+#     username
+#     profilePictureUrl
+#   }
+# }
 
-query {
-  getUserById(id: 2) {
-    id
-    displayName
-    username
-  }
-}
+# query {
+#   getUserById(id: 2) {
+#     id
+#     displayName
+#     username
+#   }
+# }
 
 
-mutation {
-  addUser(displayName: "Dom4", email: "dom4@gmail.com", password: "123456") {
-    id
-    displayName
-    email
-  }
-}
+# mutation {
+#   addUser(displayName: "Dom4", username: "dom1", password: "123456") {
+#     id
+#     displayName
+#     username
+#   }
+# }
 
-mutation {
-  updateUser(id: 1, displayName: "Jane D") {
-    id
-    displayName
-    email
-  }
-}
+# mutation {
+#   updateUser(id: 1, displayName: "Jane D") {
+#     id
+#     displayName
+#     username
+#   }
+# }
 
-mutation {
-  updateUserAvatar(id: 9, profilePictureUrl: "https://media-hosting.imagekit.io//d1445da46d0b4630/screenshot_1741452399903.png?Expires=1836060401&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=V7um6nNEX4DCkvIqquYn5KvWVtfEKa0xv84rr00wdfOvb~L6i4tHQ2gO3Lg4xNXndrYq~GBja-0cywLpbt~yFeRj4rQjIPGvo-rdBT58jcl1jxQ5nBFR0TUBzLXgzxEkvXXPadyipMdsgtBMsTiLF6Hi6LpXJsM05iqr1I2osfLnwzNOzeJk1hFH6YwYgDXK2R~Q2ALBhXKF~CqJMFu6i9nKkfMve463hVJGUfaYSdSVU7aUIlt~EUnUSR7O3U6iIywqtK18itpidZjcLR1JmZMuj5xkSV4aUZUTiyTOewuctobXOBqPf03HVLn5cBHa7kEZ5FgTGKKcceExAjJogQ__") {
-    id
-    profilePictureUrl
-  }
-}
+# mutation {
+#   updateUserAvatar(id: 9, profilePictureUrl: "https://media-hosting.imagekit.io//d1445da46d0b4630/screenshot_1741452399903.png?Expires=1836060401&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=V7um6nNEX4DCkvIqquYn5KvWVtfEKa0xv84rr00wdfOvb~L6i4tHQ2gO3Lg4xNXndrYq~GBja-0cywLpbt~yFeRj4rQjIPGvo-rdBT58jcl1jxQ5nBFR0TUBzLXgzxEkvXXPadyipMdsgtBMsTiLF6Hi6LpXJsM05iqr1I2osfLnwzNOzeJk1hFH6YwYgDXK2R~Q2ALBhXKF~CqJMFu6i9nKkfMve463hVJGUfaYSdSVU7aUIlt~EUnUSR7O3U6iIywqtK18itpidZjcLR1JmZMuj5xkSV4aUZUTiyTOewuctobXOBqPf03HVLn5cBHa7kEZ5FgTGKKcceExAjJogQ__") {
+#     id
+#     profilePictureUrl
+#   }
+# }
 
-mutation {
-  loginUser(email: "dom@gmail.com", password: "123456") {
-    success
-    message
-    user {
-      id
-      displayName
-      email
-      profilePictureUrl
-    }
-  }
-}
+# mutation {
+#   loginUser(username: "dom@gmail.com", password: "123456") {
+#     success
+#     message
+#     user {
+#       id
+#       displayName
+#       username
+#       profilePictureUrl
+#     }
+#   }
+# }
 
-mutation {
-  logoutUser
-}
+# mutation {
+#   logoutUser
+# }
 
-mutation {
-  deleteUser(id: 1)
-}
+# mutation {
+#   deleteUser(id: 1)
+# }
 
-{
-  get_users {
-    id
-    display_name
-    username
-    profile_picture_url
-  }
-}
+# {
+#   getUsers {
+#     id
+#     displayName
+#     username
+#     profilePictureUrl
+#   }
+# }
 
-{
-  get_zones_by_concert(concertId: 2) {
-    zone_id
-    concert_id
-    zone_name
-    price
-  }
-}
+# {
+#   getConcerts {
+#     concertId
+#     concertName
+#     bandName
+#     concertType
+#   }
+# }
 
-{
-  get_seats_by_concert_zone(concertId: 2, zoneName: "VIP") {
-    seat_id
-    concert_id
-    zone_id
-    seat_number
-    seat_status
-  }
-}
+# {
+#   getConcertById(concertId: 2) {
+#     concertId
+#     concertName
+#     bandName
+#     concertType
+#   }
+# }
 
-mutation {
-  update_seat_status(seatId: 5, newStatus: "booked") {
-    seat_id
-    concert_id
-    zone_id
-    seat_number
-    seat_status
-  }
-}
 
-mutation {
-  create_booking(userId: 1, concertId: 2, zoneId: 101, seatIds: [5, 6]) {
-    booking_id
-    user_id
-    concert_id
-    zone_id
-    seat_ids
-    seat_count
-    total_price
-    booking_status
-  }
-}
+# {
+#   getZonesByConcert(concertId: 2) {
+#     zoneId
+#     zoneName
+#     price
+#   }
+# }
 
-mutation {
-  update_booking_status(bookingId: 25, newStatus: "confirmed") {
-    booking_id
-    user_id
-    concert_id
-    zone_id
-    seat_id
-    booking_status
-  }
-}
+# {
+#   getSeatsByConcertZone(concertId: 2, zoneName: "VIP") {
+#     seatId
+#     seatNumber
+#     seatStatus
+#   }
+# }
 
-mutation {
-  confirm_payment_and_generate_tickets(bookingId: 25) {
-    ticket_id
-    booking_id
-    user_id
-    ticket_code
-  }
-}
+# mutation {
+#   createBooking(userId: 1, concertId: 2, zoneId: 101, seatCount: 3, seatIds: [5, 6, 7]) {
+#     bookingId
+#     userId
+#     concertName
+#     zoneName
+#     seatNumber
+#     seatCount
+#     totalPrice
+#     status
+#   }
+# }
 
-{
-  get_ticket_details_by_user(userId: 1) {
-    ticket_id
-    booking_id
-    user_id
-    concert_name
-    zone_name
-    seat_number
-    ticket_code
-  }
-}
+# mutation {
+#   updateBookingStatus(bookingId: 25, newStatus: "cancelled") {
+#     bookingId
+#     status
+#   }
+# }
+
+
+# mutation {
+#   confirmPaymentAndGenerateTickets(bookingId: 25) {
+#     ticketId
+#     bookingId
+#     userId
+#     concertName
+#     zoneName
+#     seatNumber
+#     ticketCode
+#     qrCode
+#   }
+# }
+
+# {
+#   getBookingsByUser(userId: 1) {
+#     bookingId
+#     concertName
+#     zoneName
+#     seatNumber
+#     seatCount
+#     totalPrice
+#     status
+#   }
+# }
+
+# {
+#   getTicketsByUser(userId: 1) {
+#     ticketId
+#     bookingId
+#     userId
+#     concertName
+#     zoneName
+#     seatNumber
+#     ticketCode
+#     qrCode
+#   }
+# }
