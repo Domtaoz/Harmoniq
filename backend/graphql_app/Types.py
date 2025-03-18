@@ -58,3 +58,4 @@ class TicketType:
     zone_name: str
     seat_number: str
     ticket_code: str
+    qr_code: str
