@@ -115,7 +115,7 @@ class Mutation:
         return None
 
     @strawberry.mutation
-    def create_booking(self, user_id: int, concert_id: int, zone_id: int, seat_count: int, seat_ids: List[int]) -> Optional[BookingDetailType]:
+    def create_booking(self, user_id: int, concert_id: int, zone_id: int, seat_count: int, seat_ids: List[int]) -> Optional[BookingType]:
         """สร้างการจองและระบุจำนวนที่นั่งที่จอง"""
         if seat_count != len(seat_ids):
             raise ValueError("seat_count ต้องตรงกับจำนวน seat_ids ที่เลือก")
