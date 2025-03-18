@@ -49,3 +49,28 @@ class TicketGateway:
                 }
                 for t in tickets
             ]
+            
+    @classmethod
+    def create_ticket(cls, booking_id: int, user_id: int, ticket_code: str, qr_code: str, concert_name: str, zone_name: str, seat_number: str) -> dict:
+        """สร้างตั๋วตามจำนวนที่นั่งที่จอง"""
+        with SessionLocal() as db:
+            new_ticket = Ticket(
+                booking_id=booking_id,
+                user_id=user_id,
+                ticket_code=ticket_code,  # ✅ ใช้ ticket_code ที่ส่งเข้ามา
+                qr_code=qr_code  # ✅ ใช้ qr_code ที่ส่งเข้ามา
+            )
+            db.add(new_ticket)
+            db.commit()
+            db.refresh(new_ticket)
+
+            return {
+                "ticket_id": new_ticket.ticket_id,
+                "booking_id": new_ticket.booking_id,
+                "user_id": new_ticket.user_id,
+                "ticket_code": new_ticket.ticket_code,  # ✅ ใช้ ticket_code ที่สร้าง
+                "qr_code": new_ticket.qr_code,  # ✅ ใช้ qr_code ที่สร้าง
+                "concert_name": concert_name,
+                "zone_name": zone_name,
+                "seat_number": seat_number
+            }

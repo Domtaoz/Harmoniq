@@ -156,25 +156,35 @@ class Mutation:
 
     @strawberry.mutation
     def confirm_payment_and_generate_tickets(self, booking_id: int) -> List[TicketType]:
-        """เมื่อชำระเงินแล้ว เปลี่ยนสถานะการจอง และสร้างตั๋ว"""
+        """เมื่อชำระเงินแล้ว → เปลี่ยนสถานะการจอง และสร้างตั๋วตามจำนวนที่จอง"""
         tickets = []
         booking = BookingGateway.update_booking_status(booking_id, "confirmed")  # เปลี่ยนเป็น confirmed
+    
         if booking:
-            for seat_id in booking["seat_ids"]:
+            for seat_number in booking["seat_numbers"]:  # ใช้ที่นั่งแต่ละตัวสร้างตั๋ว
                 ticket_code = "".join(random.choices(string.ascii_uppercase + string.digits, k=10))
-
+                qr_code = "".join(random.choices(string.ascii_letters + string.digits, k=20))  # สุ่ม QR Code
+    
                 ticket = TicketGateway.create_ticket(
                     booking_id=booking_id,
                     user_id=booking["user_id"],
-                    ticket_code=ticket_code
+                    ticket_code=ticket_code,  # ✅ กำหนด ticket_code
+                    qr_code=qr_code,  # ✅ กำหนด qr_code
+                    concert_name=booking["concert_name"],
+                    zone_name=booking["zone_name"],
+                    seat_number=seat_number
                 )
+
                 tickets.append(
                     TicketType(
                         ticket_id=ticket["ticket_id"],
                         booking_id=ticket["booking_id"],
                         user_id=ticket["user_id"],
-                        ticket_code=ticket["ticket_code"]
+                        concert_name=ticket["concert_name"],
+                        zone_name=ticket["zone_name"],
+                        seat_number=ticket["seat_number"],
+                        ticket_code=ticket["ticket_code"],  # ✅ ใช้ ticket_code ที่กำหนด
+                        qr_code=ticket["qr_code"]  # ✅ ใช้ qr_code ที่กำหนด
                     )
                 )
         return tickets
-    
