@@ -85,65 +85,96 @@ class BookingGateway:
     
     
     @classmethod
-    def confirm_payment(cls, booking_id: int) -> Optional[Ticket]:
+    def confirm_payment(cls, booking_id: int) -> Optional[List[Ticket]]:
         """เมื่อชำระเงินแล้ว → เปลี่ยนสถานะการจอง และออกตั๋ว"""
         with SessionLocal() as db:
             booking = db.query(Booking).filter(Booking.booking_id == booking_id).first()
-            if booking and booking.status == "pending":
-                # เปลี่ยนสถานะการจองเป็น "confirmed"
-                booking.status = "confirmed"
-                
-                # สร้าง Ticket
+        if booking and booking.booking_status == "pending":  # ✅ ใช้ booking_status แทน status
+            # ✅ เปลี่ยนสถานะการจองเป็น "confirmed"
+            booking.booking_status = "confirmed"
+            db.commit()
+
+            # ✅ ดึงรายการที่นั่งที่ถูกจอง
+            booked_seats = db.query(BookingSeat).filter(BookingSeat.booking_id == booking_id).all()
+
+            tickets = []
+            for seat in booked_seats:
+                seat_info = db.query(Seat).filter(Seat.seat_id == seat.seat_id).first()
+
+                # ✅ เปลี่ยน seat_status เป็น "booked"
+                seat_info.seat_status = "booked"
+                db.commit()
+
+                # ✅ สร้าง ticket_code และ QR Code
                 ticket_code = "".join(random.choices(string.ascii_uppercase + string.digits, k=10))
-                qr_code = "".join(random.choices(string.ascii_letters + string.digits, k=20))  # สุ่ม QR Code
+                qr_code = "".join(random.choices(string.ascii_letters + string.digits, k=20))
 
                 new_ticket = Ticket(
                     booking_id=booking_id,
-                    ticket_code=ticket_code,
-                    qr_code=qr_code
+                    user_id=booking.user_id,
+                    seat_id=seat.seat_id,  # ✅ เพิ่ม seat_id ใน Ticket
+                    ticket_code=ticket_code
                 )
                 db.add(new_ticket)
                 db.commit()
                 db.refresh(new_ticket)
 
-                return new_ticket
+                tickets.append(new_ticket)
+
+            return tickets
         return None
     
     @classmethod
-    def create_booking(cls, user_id: int, concert_id: int, zone_id: int, seat_count: int, seat_numbers: List[str]) -> Optional[dict]:
-        """สร้างการจองและคำนวณราคาตามจำนวนที่นั่ง"""
+    def create_booking(cls, user_id: int, concert_id: int, zone_id: int, seat_count: int, seat_ids: List[int]) -> Optional[dict]:
+        """สร้างการจองและบันทึกหลาย seat_id ลง booking_seats"""
+
+        if seat_count != len(seat_ids):
+            raise ValueError("seat_count ต้องตรงกับจำนวน seat_ids ที่เลือก")
+
         with SessionLocal() as db:
-            # ดึงราคาของโซน
-            zone_price = db.query(Zone.price).filter(Zone.zone_id == zone_id).scalar()
-            concert = db.query(Concert).filter(Concert.concert_id == concert_id).first()
-            zone = db.query(Zone).filter(Zone.zone_id == zone_id).first()
-            
-            # คำนวณราคาทั้งหมดของการจอง
-            total_price = zone_price * seat_count
+        # ✅ ตรวจสอบว่าทุก seat_id ต้องเป็น "available"
+            booked_seats = (
+                db.query(Seat)
+                .filter(Seat.seat_id.in_(seat_ids), Seat.seat_status == "booked")
+            .all()
+        )
 
-            # สร้างข้อมูลการจองใหม่
-            new_booking = Booking(
-                user_id=user_id,
-                concert_id=concert_id,
-                zone_id=zone_id,
-                seat_number=", ".join(map(str, seat_numbers)),  
-                booking_status="pending"
+        if booked_seats:
+            raise ValueError(f"ที่นั่ง {', '.join([seat.seat_number for seat in booked_seats])} ถูกจองแล้ว กรุณาเลือกที่นั่งอื่น")
+
+        # ✅ สร้าง Booking ใหม่
+        new_booking = Booking(
+            user_id=user_id,
+            concert_id=concert_id,
+            zone_id=zone_id,
+            booking_status="pending"
+        )
+        db.add(new_booking)
+        db.commit()
+        db.refresh(new_booking)
+
+        # ✅ เพิ่มที่นั่งไปที่ booking_seats
+        for seat_id in seat_ids:
+            new_booking_seat = BookingSeat(
+                booking_id=new_booking.booking_id,
+                seat_id=seat_id
             )
-            db.add(new_booking)
-            db.commit()
-            db.refresh(new_booking)
+            db.add(new_booking_seat)
 
-            return {
-                "booking_id": new_booking.booking_id,
-                "user_id": new_booking.user_id,
-                "concert_id": new_booking.concert_id,
-                "concert_name": concert.concert_name,
-                "zone_name": zone.zone_name,
-                "seat_numbers": seat_numbers,  # ✅ คืนค่า seat_numbers เป็น list
-                "seat_count": seat_count,
-                "total_price": float(total_price),
-                "booking_status": new_booking.booking_status
-            }
+        db.commit()
+
+        return {
+            "booking_id": new_booking.booking_id,
+            "user_id": new_booking.user_id,
+            "concert_id": new_booking.concert_id,
+            "concert_name": db.query(Concert.concert_name).filter(Concert.concert_id == concert_id).scalar(),
+            "zone_name": db.query(Zone.zone_name).filter(Zone.zone_id == zone_id).scalar(),
+            "seat_numbers": seat_ids,  # ✅ คืนค่า seat_ids เป็น List
+            "seat_count": seat_count,
+            "total_price": db.query(func.sum(Zone.price)).filter(Zone.zone_id == zone_id).scalar() * seat_count,
+            "booking_status": new_booking.booking_status
+        }
+
             
     @classmethod
     def delete_booking(cls, booking_id: int) -> bool:

@@ -125,8 +125,18 @@ class Mutation:
             raise ValueError("seat_count ต้องตรงกับจำนวน seat_ids ที่เลือก")
 
         with SessionLocal() as db:
-        # สร้าง Booking ใหม่
-            new_booking = Booking(
+            # ✅ ตรวจสอบว่าทุก seat_id ต้องเป็น "available"
+            booked_seats = (
+            db.query(Seat)
+            .filter(Seat.seat_id.in_(seat_ids), Seat.seat_status == "booked")
+            .all()
+        )
+
+        if booked_seats:
+            raise ValueError(f"ที่นั่ง {', '.join([seat.seat_number for seat in booked_seats])} ถูกจองแล้ว กรุณาเลือกที่นั่งอื่น")
+
+        # ✅ สร้าง Booking ใหม่
+        new_booking = Booking(
             user_id=user_id,
             concert_id=concert_id,
             zone_id=zone_id,
@@ -136,7 +146,7 @@ class Mutation:
         db.commit()
         db.refresh(new_booking)
 
-        # เพิ่มที่นั่งไปที่ booking_seats
+        # ✅ เพิ่มที่นั่งไปที่ booking_seats
         for seat_id in seat_ids:
             new_booking_seat = BookingSeat(
                 booking_id=new_booking.booking_id,
@@ -158,41 +168,60 @@ class Mutation:
             status=new_booking.booking_status
         )
 
+
     
     @strawberry.mutation
     def update_booking_status(self, booking_id: int, new_status: str) -> Optional[BookingType]:
         """เปลี่ยนสถานะการจอง"""
-        if new_status == "cancelled":
-            success = BookingGateway.delete_booking(booking_id)  # ✅ ลบการจองถ้าสถานะเป็น cancelled
-            return None if success else BookingType(booking_id=booking_id, status="not found")
+        with SessionLocal() as db:
+            booking = db.query(Booking).filter(Booking.booking_id == booking_id).first()
+        if not booking:
+            return None  # ✅ ถ้าไม่เจอ booking ให้คืนค่า None
 
-        else:
-            booking = BookingGateway.update_booking_status(booking_id, new_status)
-            if booking:
-                return BookingType(
-                    booking_id=booking.booking_id,
-                    user_id=booking.user_id,
-                    concert_name=booking.concert_name,
-                    zone_name=booking.zone_name,
-                    seat_number=", ".join(booking.seat_numbers),
-                    seat_count=booking.seat_count,
-                    total_price=booking.total_price,
-                    status=booking.booking_status
-                )
-        return None
+        # ✅ ถ้าสถานะเป็น "cancelled" → ลบ booking
+        if new_status == "cancelled":
+            db.delete(booking)
+            db.commit()
+            return None
+
+        # ✅ อัปเดต booking_status เป็น new_status
+        booking.booking_status = new_status
+
+        # ✅ ถ้าเปลี่ยนเป็น "confirmed" → เปลี่ยน seat_status เป็น "booked"
+        if new_status == "confirmed":
+            booked_seats = db.query(BookingSeat).filter(BookingSeat.booking_id == booking_id).all()
+            for seat in booked_seats:
+                seat_info = db.query(Seat).filter(Seat.seat_id == seat.seat_id).first()
+                if seat_info:
+                    seat_info.seat_status = "booked"  # ✅ เปลี่ยนสถานะที่นั่งเป็น "booked"
+
+        db.commit()  # ✅ Commit ทุกการเปลี่ยนแปลงที่เกิดขึ้น
+
+        return BookingType(
+            booking_id=booking.booking_id,
+            user_id=booking.user_id,
+            concert_name=db.query(Concert.concert_name).filter(Concert.concert_id == booking.concert_id).scalar(),
+            zone_name=db.query(Zone.zone_name).filter(Zone.zone_id == booking.zone_id).scalar(),
+            seat_number=", ".join(
+                [db.query(Seat.seat_number).filter(Seat.seat_id == seat.seat_id).scalar() for seat in booked_seats]
+            ),  # ✅ ดึง seat_number จาก booking_seats
+            seat_count=len(booked_seats),
+            total_price=db.query(func.sum(Zone.price)).filter(Zone.zone_id == booking.zone_id).scalar() * len(booked_seats),
+            status=booking.booking_status
+        )
+
+
 
     @strawberry.mutation
     def confirm_payment_and_generate_tickets(self, booking_id: int) -> List[TicketType]:
         """เปลี่ยนสถานะการจองและสร้างตั๋วเฉพาะที่นั่งที่จองไว้"""
         with SessionLocal() as db:
-            # ดึง Booking
+        # ✅ ดึง Booking และเปลี่ยนสถานะเป็น "confirmed"
             booking = db.query(Booking).filter(Booking.booking_id == booking_id).first()
         if not booking:
             return []
 
-        # ✅ เปลี่ยน booking_status เป็น "confirmed"
         booking.booking_status = "confirmed"
-        db.commit()
 
         # ✅ ดึงรายการที่นั่งจาก booking_seats
         booked_seats = db.query(BookingSeat).filter(BookingSeat.booking_id == booking_id).all()
@@ -202,15 +231,15 @@ class Mutation:
             seat_info = db.query(Seat).filter(Seat.seat_id == seat.seat_id).first()
 
             # ✅ เปลี่ยน seat_status เป็น "booked"
-            seat_info.seat_status = "booked"
-            db.commit()
+            if seat_info:
+                seat_info.seat_status = "booked"
 
             # ✅ สร้าง ticket_code และออกตั๋ว
             ticket_code = "".join(random.choices(string.ascii_uppercase + string.digits, k=10))
             new_ticket = Ticket(
                 booking_id=booking_id,
                 user_id=booking.user_id,
-                ticket_code=ticket_code
+                ticket_code=ticket_code  # ❌ **ลบ seat_id ออก**
             )
             db.add(new_ticket)
             db.commit()
@@ -227,6 +256,7 @@ class Mutation:
             ))
 
         return tickets
+
 
 
 

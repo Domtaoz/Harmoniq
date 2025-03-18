@@ -18,8 +18,9 @@ class TicketGateway:
 
     @classmethod
     def get_tickets_by_user(cls, user_id: int) -> List[dict]:
-        """ดึงข้อมูลตั๋วของผู้ใช้ที่ชำระเงินแล้วโดยตรงจาก Database"""
+        """ดึงข้อมูลตั๋วของผู้ใช้จากฐานข้อมูลโดยตรง"""
         with SessionLocal() as db:
+        # ✅ ดึงรายการตั๋วและที่นั่งที่ถูกต้องโดยใช้ DISTINCT
             tickets = (
             db.query(
                 Ticket.ticket_id,
@@ -31,13 +32,17 @@ class TicketGateway:
                 Seat.seat_number
             )
             .join(Booking, Ticket.booking_id == Booking.booking_id)
-            .join(BookingSeat, Booking.booking_id == BookingSeat.booking_id)  # ✅ ใช้ BookingSeat เพื่อดึง seat_id
-            .join(Seat, BookingSeat.seat_id == Seat.seat_id)  # ✅ ดึง seat_number จาก seat_id
+            .join(BookingSeat, Booking.booking_id == BookingSeat.booking_id)  # ✅ ใช้ BookingSeat ดึง seat_id ที่ถูกต้อง
+            .join(Seat, BookingSeat.seat_id == Seat.seat_id)  # ✅ ดึง seat_number โดยตรงจาก seat_id
             .join(Concert, Booking.concert_id == Concert.concert_id)
             .join(Zone, Booking.zone_id == Zone.zone_id)
             .filter(Ticket.user_id == user_id)
+            .distinct()  # ✅ ป้องกันข้อมูลซ้ำ
+            .order_by(Ticket.ticket_id.desc())  # ✅ เรียงลำดับใหม่ล่าสุดก่อน
             .all()
         )
+
+        db.expire_all()  # ✅ ล้างค่าแคชใน Session เพื่อให้ดึงข้อมูลใหม่จาก Database
         return [
             {
                 "ticket_id": t.ticket_id,
@@ -46,11 +51,10 @@ class TicketGateway:
                 "ticket_code": t.ticket_code,
                 "concert_name": t.concert_name,
                 "zone_name": t.zone_name,
-                "seat_number": t.seat_number  # ✅ ดึง seat_number โดยตรง
+                "seat_number": t.seat_number  # ✅ ดึง seat_number ถูกต้อง
             }
             for t in tickets
         ]
-
             
     @classmethod
     def create_ticket(cls, booking_id: int, user_id: int, ticket_code: str, concert_name: str, zone_name: str, seat_number: str) -> dict:

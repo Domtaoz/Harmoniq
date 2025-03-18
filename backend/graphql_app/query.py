@@ -90,15 +90,16 @@ class Query:
 
     @strawberry.field
     def get_bookings_by_user(self, user_id: int) -> List[BookingType]:
+        """ดึงข้อมูลการจองของผู้ใช้จากฐานข้อมูลโดยตรง"""
         bookings = BookingGateway.get_bookings_by_user(user_id)
         return [
-            BookingType(
+        BookingType(
             booking_id=b["booking_id"],
             user_id=b["user_id"],
             concert_id=b["concert_id"],  
             concert_name=b["concert_name"],
             zone_name=b["zone_name"],
-            seat_number=", ".join(b["seat_numbers"]),  # ✅ เปลี่ยน seat_numbers เป็น string
+            seat_number=", ".join(b["seat_numbers"]) if b["seat_numbers"] else "No seats booked",  # ✅ ป้องกัน error กรณีที่ไม่มีที่นั่ง
             seat_count=b["seat_count"],
             total_price=b["total_price"],
             status=b["booking_status"]
@@ -110,31 +111,20 @@ class Query:
         """ดึงข้อมูลตั๋วของผู้ใช้ที่ชำระเงินแล้ว"""
         tickets = TicketGateway.get_tickets_by_user(user_id)
         return [
-            TicketType(
-                ticket_id=t["ticket_id"],
-                booking_id=t["booking_id"],
-                user_id=t["user_id"],
-                concert_name=t["concert_name"],
-                zone_name=t["zone_name"],
-                seat_number=t["seat_number"],
-                ticket_code=t["ticket_code"]
-            ) for t in tickets
-        ]
+        TicketType(
+            ticket_id=t["ticket_id"],
+            booking_id=t["booking_id"],
+            user_id=t["user_id"],
+            concert_name=t["concert_name"],
+            zone_name=t["zone_name"],
+            seat_number=t["seat_number"] if t["seat_number"] else "No seat assigned",  # ✅ ป้องกัน error ถ้าไม่มีที่นั่ง
+            ticket_code=t["ticket_code"]
+        ) for t in tickets
+    ]
         
     @strawberry.field
     def get_ticket_details_by_user(self, user_id: int) -> List[TicketType]:
         """แสดงรายละเอียดตั๋วของผู้ใช้ที่ชำระเงินแล้ว"""
-        tickets = TicketGateway.get_ticket_details_by_user(user_id)
-        return [
-            TicketType(
-                ticket_id=t["ticket_id"],
-                booking_id=t["booking_id"],
-                user_id=t["user_id"],
-                concert_name=t["concert_name"],
-                zone_name=t["zone_name"],
-                seat_number=t["seat_number"],
-                ticket_code=t["ticket_code"]
-            ) for t in tickets
-        ]
+        return self.get_tickets_by_user(user_id)
 
     
