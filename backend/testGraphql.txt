@@ -17,7 +17,7 @@
 
 
 # mutation {
-#   addUser(displayName: "Dom4", username: "dom1", password: "123456") {
+#   addUser(displayName: "Dom2", username: "dom2@gmail.com", password: "123456") {
 #     id
 #     displayName
 #     username
@@ -25,7 +25,7 @@
 # }
 
 # mutation {
-#   updateUser(id: 1, displayName: "Jane D") {
+#   updateUser(id: 2, displayName: "Dom") {
 #     id
 #     displayName
 #     username
@@ -40,7 +40,7 @@
 # }
 
 # mutation {
-#   loginUser(username: "dom@gmail.com", password: "123456") {
+#   loginUser(username: "dom1@gmail.com", password: "123456") {
 #     success
 #     message
 #     user {
@@ -79,7 +79,7 @@
 # }
 
 # {
-#   getConcertById(concertId: 2) {
+#   getConcertById(concertId: 1) {
 #     concertId
 #     concertName
 #     bandName
@@ -89,7 +89,7 @@
 
 
 # {
-#   getZonesByConcert(concertId: 2) {
+#   getZonesByConcert(concertId: 1) {
 #     zoneId
 #     zoneName
 #     price
@@ -97,7 +97,7 @@
 # }
 
 # {
-#   getSeatsByConcertZone(concertId: 2, zoneName: "VIP") {
+#   getSeatsByConcertZone(concertId: 1, zoneName: "A1") {
 #     seatId
 #     seatNumber
 #     seatStatus
@@ -105,7 +105,7 @@
 # }
 
 # mutation {
-#   createBooking(userId: 1, concertId: 2, zoneId: 101, seatCount: 3, seatIds: [5, 6, 7]) {
+#   createBooking(userId: 2, concertId: 1, zoneId: 1, seatCount: 1, seatIds: [1]) {
 #     bookingId
 #     userId
 #     concertName
@@ -118,7 +118,7 @@
 # }
 
 # mutation {
-#   updateBookingStatus(bookingId: 25, newStatus: "cancelled") {
+#   updateBookingStatus(bookingId: 8, newStatus: "cancelled") {
 #     bookingId
 #     status
 #   }
@@ -126,7 +126,7 @@
 
 
 # mutation {
-#   confirmPaymentAndGenerateTickets(bookingId: 25) {
+#   confirmPaymentAndGenerateTickets(bookingId: 9) {
 #     ticketId
 #     bookingId
 #     userId
@@ -134,12 +134,11 @@
 #     zoneName
 #     seatNumber
 #     ticketCode
-#     qrCode
 #   }
 # }
 
 # {
-#   getBookingsByUser(userId: 1) {
+#   getBookingsByUser(userId: 2) {
 #     bookingId
 #     concertName
 #     zoneName
@@ -151,7 +150,7 @@
 # }
 
 # {
-#   getTicketsByUser(userId: 1) {
+#   getTicketsByUser(userId: 2) {
 #     ticketId
 #     bookingId
 #     userId
@@ -159,6 +158,5 @@
 #     zoneName
 #     seatNumber
 #     ticketCode
-#     qrCode
 #   }
 # }
