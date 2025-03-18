@@ -94,7 +94,7 @@ class Query:
         """ดึงข้อมูลตั๋วของผู้ใช้ที่ชำระเงินแล้ว"""
         tickets = TicketGateway.get_tickets_by_user(user_id)
         return [
-            TicketDetailType(
+            TicketType(
                 ticket_id=t["ticket_id"],
                 booking_id=t["booking_id"],
                 user_id=t["user_id"],
