@@ -20,15 +20,29 @@ class BookingGateway:
             return db.query(Booking).filter(Booking.booking_id == booking_id).first()
 
     @classmethod
-    def update_booking_status(cls, booking_id: int, new_status: str) -> Optional[Booking]:
+    def update_booking_status(cls, booking_id: int, new_status: str) -> Optional[dict]:
         """เปลี่ยนสถานะการจอง"""
         with SessionLocal() as db:
             booking = db.query(Booking).filter(Booking.booking_id == booking_id).first()
             if booking:
-                booking.status = new_status
+                booking.booking_status = new_status
                 db.commit()
-                return booking
-        return None
+
+                # ✅ ดึงข้อมูลที่จำเป็นมาเป็น dict เพื่อให้ mutation.py ใช้งานได้
+                concert = db.query(Concert).filter(Concert.concert_id == booking.concert_id).first()
+                zone = db.query(Zone).filter(Zone.zone_id == booking.zone_id).first()
+                seats = db.query(Seat).filter(Seat.zone_id == booking.zone_id).all()
+            
+                return {
+                    "booking_id": booking.booking_id,
+                    "user_id": booking.user_id,
+                    "concert_name": concert.concert_name if concert else None,
+                    "zone_name": zone.zone_name if zone else None,
+                    "seat_numbers": [s.seat_number for s in seats],  # ✅ คืนค่า List ของ seat_number
+                    "booking_status": booking.booking_status
+                }
+            return None
+
     
     @classmethod
     def get_bookings_by_user(cls, user_id: int) -> List[dict]:
