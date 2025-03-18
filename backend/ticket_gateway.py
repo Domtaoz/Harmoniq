@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from graphql_app.database import SessionLocal
-from graphql_app.model import Ticket, Booking, Concert, Zone, Seat
+from graphql_app.model import Ticket, Booking, Concert, Zone, Seat, BookingSeat
 from typing import Optional, List
 
 class TicketGateway:
@@ -21,34 +21,36 @@ class TicketGateway:
         """ดึงข้อมูลตั๋วของผู้ใช้ที่ชำระเงินแล้ว"""
         with SessionLocal() as db:
             tickets = (
-                db.query(
-                    Ticket.ticket_id,
-                    Ticket.booking_id,
-                    Ticket.user_id,
-                    Ticket.ticket_code,
-                    Concert.concert_name,
-                    Zone.zone_name,
-                    Seat.seat_number
-                )
-                .join(Booking, Ticket.booking_id == Booking.booking_id)
-                .join(Concert, Booking.concert_id == Concert.concert_id)
-                .join(Zone, Booking.zone_id == Zone.zone_id)
-                .join(Seat, Booking.seat_id == Seat.seat_id)
-                .filter(Ticket.user_id == user_id)
-                .all()
+            db.query(
+                Ticket.ticket_id,
+                Ticket.booking_id,
+                Ticket.user_id,
+                Ticket.ticket_code,
+                Concert.concert_name,
+                Zone.zone_name,
+                Seat.seat_number
             )
-            return [
-                {
-                    "ticket_id": t.ticket_id,
-                    "booking_id": t.booking_id,
-                    "user_id": t.user_id,
-                    "ticket_code": t.ticket_code,
-                    "concert_name": t.concert_name,
-                    "zone_name": t.zone_name,
-                    "seat_number": t.seat_number
-                }
-                for t in tickets
-            ]
+            .join(Booking, Ticket.booking_id == Booking.booking_id)
+            .join(BookingSeat, Booking.booking_id == BookingSeat.booking_id)  # ✅ JOIN ผ่าน BookingSeat
+            .join(Seat, BookingSeat.seat_id == Seat.seat_id)  # ✅ ใช้ BookingSeat เพื่อดึง seat_number
+            .join(Concert, Booking.concert_id == Concert.concert_id)
+            .join(Zone, Booking.zone_id == Zone.zone_id)
+            .filter(Ticket.user_id == user_id)
+            .all()
+        )
+        return [
+            {
+                "ticket_id": t.ticket_id,
+                "booking_id": t.booking_id,
+                "user_id": t.user_id,
+                "ticket_code": t.ticket_code,
+                "concert_name": t.concert_name,
+                "zone_name": t.zone_name,
+                "seat_number": t.seat_number  # ✅ ดึง seat_number ถูกต้อง
+            }
+            for t in tickets
+        ]
+
             
     @classmethod
     def create_ticket(cls, booking_id: int, user_id: int, ticket_code: str, concert_name: str, zone_name: str, seat_number: str) -> dict:

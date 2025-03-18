@@ -198,6 +198,9 @@ class Mutation:
         for seat in booked_seats:
             seat_info = db.query(Seat).filter(Seat.seat_id == seat.seat_id).first()
 
+            seat_info.seat_status = "booked"
+            db.commit()
+
             ticket_code = "".join(random.choices(string.ascii_uppercase + string.digits, k=10))
             new_ticket = Ticket(
                 booking_id=booking_id,
