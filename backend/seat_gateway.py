@@ -28,17 +28,30 @@ class SeatGateway:
                 return seat
         return None
     
-    def get_seats_by_concert_zone(cls, concert_name: str, zone_name: str) -> List[Seat]:
-        """ดึงข้อมูลที่นั่งทั้งหมดตามชื่อคอนเสิร์ตและโซน"""
+    @classmethod
+    def get_seats_by_concert_zone(cls, concert_id: int, zone_name: str) -> List[dict]:
+        """ดึงข้อมูลที่นั่งทั้งหมดตาม concert_id และ zone_name"""
         with SessionLocal() as db:
             seats = (
                 db.query(Seat)
                 .join(Concert, Seat.concert_id == Concert.concert_id)
                 .join(Zone, Seat.zone_id == Zone.zone_id)
-                .filter(Concert.concert_name == concert_name, Zone.zone_name == zone_name)
+                .filter(
+                    Concert.concert_id == concert_id,
+                    Zone.zone_name == zone_name
+                )
                 .all()
             )
-            return seats
+            return [
+                {
+                    "seat_id": s.seat_id,
+                    "concert_id": concert_id,
+                    "zone_name": zone_name,
+                    "seat_number": s.seat_number,
+                    "seat_status": s.seat_status
+                }
+                for s in seats
+            ]
 
     @classmethod
     def update_seat_status(cls, concert_name: str, zone_name: str, seat_number: str, new_status: str) -> Optional[Seat]:

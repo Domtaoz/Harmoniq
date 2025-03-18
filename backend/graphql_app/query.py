@@ -82,7 +82,7 @@ class Query:
             SeatType(
                 seat_id=s["seat_id"],
                 concert_id=s["concert_id"],
-                zone_id=s["zone_id"],
+                zone_name=s["zone_name"],
                 seat_number=s["seat_number"],
                 seat_status=s["seat_status"]
             ) for s in seats
