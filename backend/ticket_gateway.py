@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 from graphql_app.database import SessionLocal
 from graphql_app.model import Ticket, Booking, Concert, Zone, Seat, BookingSeat
 from typing import Optional, List
+from sqlalchemy.sql import func
 
 class TicketGateway:
     @classmethod
@@ -20,7 +21,7 @@ class TicketGateway:
     def get_tickets_by_user(cls, user_id: int) -> List[dict]:
         """ดึงข้อมูลตั๋วของผู้ใช้จากฐานข้อมูลโดยตรง"""
         with SessionLocal() as db:
-        # ✅ ดึงรายการตั๋วและที่นั่งที่ถูกต้องโดยใช้ DISTINCT
+        # ✅ ป้องกันข้อมูลซ้ำโดยใช้ DISTINCT และ GROUP BY
             tickets = (
             db.query(
                 Ticket.ticket_id,
@@ -29,15 +30,15 @@ class TicketGateway:
                 Ticket.ticket_code,
                 Concert.concert_name,
                 Zone.zone_name,
-                Seat.seat_number
+                func.group_concat(func.distinct(Seat.seat_number)).label("seat_numbers")  # ✅ รวมที่นั่งในตั๋วเดียวกัน
             )
             .join(Booking, Ticket.booking_id == Booking.booking_id)
-            .join(BookingSeat, Booking.booking_id == BookingSeat.booking_id)  # ✅ ใช้ BookingSeat ดึง seat_id ที่ถูกต้อง
-            .join(Seat, BookingSeat.seat_id == Seat.seat_id)  # ✅ ดึง seat_number โดยตรงจาก seat_id
             .join(Concert, Booking.concert_id == Concert.concert_id)
             .join(Zone, Booking.zone_id == Zone.zone_id)
+            .join(BookingSeat, Booking.booking_id == BookingSeat.booking_id)  # ✅ ใช้ BookingSeat เพื่อดึง seat_id
+            .join(Seat, BookingSeat.seat_id == Seat.seat_id)  # ✅ ดึง seat_number จาก seat_id
             .filter(Ticket.user_id == user_id)
-            .distinct()  # ✅ ป้องกันข้อมูลซ้ำ
+            .group_by(Ticket.ticket_id)  # ✅ ป้องกันตั๋วซ้ำ
             .order_by(Ticket.ticket_id.desc())  # ✅ เรียงลำดับใหม่ล่าสุดก่อน
             .all()
         )
@@ -51,10 +52,11 @@ class TicketGateway:
                 "ticket_code": t.ticket_code,
                 "concert_name": t.concert_name,
                 "zone_name": t.zone_name,
-                "seat_number": t.seat_number  # ✅ ดึง seat_number ถูกต้อง
+                "seat_numbers": t.seat_numbers.split(",") if t.seat_numbers else ["No seat assigned"],  # ✅ ใช้ seat_numbers
             }
             for t in tickets
         ]
+
             
     @classmethod
     def create_ticket(cls, booking_id: int, user_id: int, ticket_code: str, concert_name: str, zone_name: str, seat_number: str) -> dict:
