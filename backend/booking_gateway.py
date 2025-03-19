@@ -125,24 +125,23 @@ class BookingGateway:
         return None
     
     @classmethod
-    def create_booking(cls, user_id: int, concert_id: int, zone_id: int, seat_count: int, seat_ids: List[int]) -> Optional[dict]:
-        """สร้างการจองและบันทึกหลาย seat_id ลง booking_seats"""
-
-        if seat_count != len(seat_ids):
-            raise ValueError("seat_count ต้องตรงกับจำนวน seat_ids ที่เลือก")
+    def create_booking(cls, user_id: int, concert_id: int, zone_id: int, seat_ids: List[int]) -> Optional[dict]:
+        """สร้างการจองโดยระบุที่นั่งที่ถูกต้อง"""
+        if not seat_ids:
+            raise ValueError("ต้องเลือกที่นั่งอย่างน้อย 1 ที่")
 
         with SessionLocal() as db:
-        # ✅ ตรวจสอบว่าทุก seat_id ต้องเป็น "available"
+        # ✅ ตรวจสอบว่าทุกที่นั่งยังว่าง
             booked_seats = (
-                db.query(Seat)
-                .filter(Seat.seat_id.in_(seat_ids), Seat.seat_status == "booked")
+            db.query(Seat)
+            .filter(Seat.seat_id.in_(seat_ids), Seat.seat_status == "booked")
             .all()
         )
 
         if booked_seats:
             raise ValueError(f"ที่นั่ง {', '.join([seat.seat_number for seat in booked_seats])} ถูกจองแล้ว กรุณาเลือกที่นั่งอื่น")
 
-        # ✅ สร้าง Booking ใหม่
+        # ✅ สร้าง Booking ใหม่ โดยไม่ใส่ seat_id (เพราะที่นั่งเก็บใน booking_seats)
         new_booking = Booking(
             user_id=user_id,
             concert_id=concert_id,
@@ -153,7 +152,7 @@ class BookingGateway:
         db.commit()
         db.refresh(new_booking)
 
-        # ✅ เพิ่มที่นั่งไปที่ booking_seats
+        # ✅ บันทึกที่นั่งใน booking_seats
         for seat_id in seat_ids:
             new_booking_seat = BookingSeat(
                 booking_id=new_booking.booking_id,
@@ -169,9 +168,9 @@ class BookingGateway:
             "concert_id": new_booking.concert_id,
             "concert_name": db.query(Concert.concert_name).filter(Concert.concert_id == concert_id).scalar(),
             "zone_name": db.query(Zone.zone_name).filter(Zone.zone_id == zone_id).scalar(),
-            "seat_numbers": seat_ids,  # ✅ คืนค่า seat_ids เป็น List
-            "seat_count": seat_count,
-            "total_price": db.query(func.sum(Zone.price)).filter(Zone.zone_id == zone_id).scalar() * seat_count,
+            "seat_numbers": seat_ids,
+            "seat_count": len(seat_ids),
+            "total_price": db.query(func.sum(Zone.price)).filter(Zone.zone_id == zone_id).scalar() * len(seat_ids),
             "booking_status": new_booking.booking_status
         }
 

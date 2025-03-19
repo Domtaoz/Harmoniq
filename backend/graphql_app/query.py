@@ -117,7 +117,7 @@ class Query:
             user_id=t["user_id"],
             concert_name=t["concert_name"],
             zone_name=t["zone_name"],
-            seat_number=", ".join(t["seat_numbers"]) if t["seat_numbers"] else "No seat assigned",  # ✅ ใช้ seat_numbers
+            seat_number=", ".join(t["seat_number"]) if t["seat_number"] else "No seat assigned",  # ✅ ใช้ seat_numbers
             ticket_code=t["ticket_code"]
         ) for t in tickets
     ]

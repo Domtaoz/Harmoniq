@@ -84,5 +84,8 @@ class Ticket(Base):
     ticket_id = Column(Integer, primary_key=True, index=True)
     booking_id = Column(Integer, ForeignKey("bookings.booking_id"), nullable=False)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    seat_id = Column(Integer, ForeignKey("seats.seat_id"), nullable=False)  # ✅ เก็บ seat_id
     ticket_code = Column(String, unique=True, nullable=False)
-
+    concert_name = Column(String, nullable=False)  # ✅ เก็บชื่อคอนเสิร์ต
+    zone_name = Column(String, nullable=False)  # ✅ เก็บชื่อโซน
+    seat_number = Column(String, nullable=False)  # ✅ เก็บหมายเลขที่นั่ง

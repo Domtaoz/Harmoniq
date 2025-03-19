@@ -223,6 +223,10 @@ class Mutation:
 
         booking.booking_status = "confirmed"
 
+        # ✅ ดึงข้อมูลโซนและคอนเสิร์ตจาก booking
+        concert_name = db.query(Concert.concert_name).filter(Concert.concert_id == booking.concert_id).scalar()
+        zone_name = db.query(Zone.zone_name).filter(Zone.zone_id == booking.zone_id).scalar()
+
         # ✅ ดึงรายการที่นั่งจาก booking_seats
         booked_seats = db.query(BookingSeat).filter(BookingSeat.booking_id == booking_id).all()
 
@@ -239,23 +243,30 @@ class Mutation:
             new_ticket = Ticket(
                 booking_id=booking_id,
                 user_id=booking.user_id,
-                ticket_code=ticket_code  # ❌ **ลบ seat_id ออก**
+                seat_id=seat.seat_id,
+                ticket_code=ticket_code,
+                concert_name=concert_name,
+                zone_name=zone_name,
+                seat_number=seat_info.seat_number
             )
             db.add(new_ticket)
             db.commit()
             db.refresh(new_ticket)
 
+            # ✅ คืนค่าเป็น TicketType แทน dict
             tickets.append(TicketType(
                 ticket_id=new_ticket.ticket_id,
                 booking_id=new_ticket.booking_id,
                 user_id=new_ticket.user_id,
                 ticket_code=new_ticket.ticket_code,
-                concert_name=db.query(Concert.concert_name).filter(Concert.concert_id == booking.concert_id).scalar(),
-                zone_name=db.query(Zone.zone_name).filter(Zone.zone_id == booking.zone_id).scalar(),
-                seat_number=seat_info.seat_number  # ✅ แสดงเลขที่นั่งถูกต้อง
+                concert_name=new_ticket.concert_name,
+                zone_name=new_ticket.zone_name,
+                seat_number=new_ticket.seat_number
             ))
 
         return tickets
+
+
 
 
 

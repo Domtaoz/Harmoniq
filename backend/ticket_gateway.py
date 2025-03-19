@@ -21,24 +21,18 @@ class TicketGateway:
     def get_tickets_by_user(cls, user_id: int) -> List[dict]:
         """ดึงข้อมูลตั๋วของผู้ใช้จากฐานข้อมูลโดยตรง"""
         with SessionLocal() as db:
-        # ✅ ป้องกันข้อมูลซ้ำโดยใช้ DISTINCT และ GROUP BY
+        # ✅ ดึงข้อมูลตั๋วจากตาราง tickets โดยตรง ไม่ต้อง JOIN กับ booking_seats
             tickets = (
             db.query(
                 Ticket.ticket_id,
                 Ticket.booking_id,
                 Ticket.user_id,
                 Ticket.ticket_code,
-                Concert.concert_name,
-                Zone.zone_name,
-                func.group_concat(func.distinct(Seat.seat_number)).label("seat_numbers")  # ✅ รวมที่นั่งในตั๋วเดียวกัน
+                Ticket.concert_name,  # ✅ ดึงจาก tickets โดยตรง
+                Ticket.zone_name,  # ✅ ดึงจาก tickets โดยตรง
+                Ticket.seat_number  # ✅ ดึงจาก tickets โดยตรง
             )
-            .join(Booking, Ticket.booking_id == Booking.booking_id)
-            .join(Concert, Booking.concert_id == Concert.concert_id)
-            .join(Zone, Booking.zone_id == Zone.zone_id)
-            .join(BookingSeat, Booking.booking_id == BookingSeat.booking_id)  # ✅ ใช้ BookingSeat เพื่อดึง seat_id
-            .join(Seat, BookingSeat.seat_id == Seat.seat_id)  # ✅ ดึง seat_number จาก seat_id
             .filter(Ticket.user_id == user_id)
-            .group_by(Ticket.ticket_id)  # ✅ ป้องกันตั๋วซ้ำ
             .order_by(Ticket.ticket_id.desc())  # ✅ เรียงลำดับใหม่ล่าสุดก่อน
             .all()
         )
@@ -52,12 +46,16 @@ class TicketGateway:
                 "ticket_code": t.ticket_code,
                 "concert_name": t.concert_name,
                 "zone_name": t.zone_name,
-                "seat_numbers": t.seat_numbers.split(",") if t.seat_numbers else ["No seat assigned"],  # ✅ ใช้ seat_numbers
+                "seat_number": t.seat_number  # ✅ ดึงจาก tickets โดยตรง
             }
             for t in tickets
         ]
 
-            
+
+
+
+
+       
     @classmethod
     def create_ticket(cls, booking_id: int, user_id: int, ticket_code: str, concert_name: str, zone_name: str, seat_number: str) -> dict:
         """สร้างตั๋วตามจำนวนที่นั่งที่จอง"""
