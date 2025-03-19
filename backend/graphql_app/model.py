@@ -69,7 +69,7 @@ class Booking(Base):
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     concert_id = Column(Integer, ForeignKey("concerts.concert_id"), nullable=False)
     zone_id = Column(Integer, ForeignKey("zones.zone_id"), nullable=False)
-    booking_status = Column(Enum(BookingStatus), default=BookingStatus.pending)  # ✅ ลบ seat_id ออกจาก Booking
+    booking_status = Column(Enum(BookingStatus), default=BookingStatus.pending) 
 
 class BookingSeat(Base):
     __tablename__ = "booking_seats"
@@ -84,8 +84,8 @@ class Ticket(Base):
     ticket_id = Column(Integer, primary_key=True, index=True)
     booking_id = Column(Integer, ForeignKey("bookings.booking_id"), nullable=False)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    seat_id = Column(Integer, ForeignKey("seats.seat_id"), nullable=False)  # ✅ เก็บ seat_id
+    seat_id = Column(Integer, ForeignKey("seats.seat_id"), nullable=False) 
     ticket_code = Column(String, unique=True, nullable=False)
-    concert_name = Column(String, nullable=False)  # ✅ เก็บชื่อคอนเสิร์ต
-    zone_name = Column(String, nullable=False)  # ✅ เก็บชื่อโซน
-    seat_number = Column(String, nullable=False)  # ✅ เก็บหมายเลขที่นั่ง
+    concert_name = Column(String, nullable=False)  #
+    zone_name = Column(String, nullable=False)  
+    seat_number = Column(String, nullable=False)  

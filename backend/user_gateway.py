@@ -9,19 +9,19 @@ from typing import Optional, List
 class UserGateway:
     @classmethod
     def get_users(cls) -> List[User]:
-        """ดึงข้อมูลผู้ใช้ทั้งหมด"""
+       
         with SessionLocal() as db:
             return db.query(User).all()
 
     @classmethod
     def get_user_by_id(cls, id: int) -> Optional[User]:
-        """ดึงข้อมูลผู้ใช้โดย ID"""
+       
         with SessionLocal() as db:
             return db.query(User).filter(User.id == id).first()
 
     @classmethod
     def add_user(cls, display_name: str, username: str, password: str, profile_picture_url: Optional[str] = None) -> Optional[User]:
-        """เพิ่มผู้ใช้ใหม่"""
+      
         hashed_pw = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode('utf-8')
         with SessionLocal() as db:
             if db.query(User).filter(User.username == username).first():
@@ -36,7 +36,7 @@ class UserGateway:
     @classmethod
     def update_user(cls, id: int, display_name: Optional[str] = None, username: Optional[str] = None,
                     password: Optional[str] = None, profile_picture_url: Optional[str] = None) -> Optional[User]:
-        """อัปเดตข้อมูลผู้ใช้"""
+       
         with SessionLocal() as db:
             user = db.query(User).filter(User.id == id).first()
             if not user:
@@ -57,7 +57,7 @@ class UserGateway:
   
     @classmethod
     def update_user_avatar(cls, user_id: int, profile_picture_url: str) -> Optional[User]:
-        """อัปเดตรูปโปรไฟล์ของผู้ใช้"""
+        
         with SessionLocal() as db:
             user = db.query(User).filter(User.id == user_id).first()
             if not user:
@@ -70,7 +70,7 @@ class UserGateway:
 
     @classmethod
     def delete_user(cls, id: int) -> bool:
-        """ลบผู้ใช้"""
+      
         with SessionLocal() as db:
             user = db.query(User).filter(User.id == id).first()
             if not user:
@@ -81,7 +81,7 @@ class UserGateway:
 
     @classmethod
     def login_user(cls, username: str, password: str) -> Optional[User]:
-        """ตรวจสอบการเข้าสู่ระบบ"""
+      
         with SessionLocal() as db:
             user = db.query(User).filter(User.username == username).first()
             if not user or not bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8')):
@@ -90,7 +90,7 @@ class UserGateway:
 
     @staticmethod
     def get_user_by_email(username: str) -> Optional[User]:
-        """ค้นหาผู้ใช้ตาม username"""
+       
         with SessionLocal() as db:
             try:
                 return db.query(User).filter(User.username == username).one()
@@ -99,7 +99,7 @@ class UserGateway:
 
     @staticmethod
     def verify_password(user: User, password: str) -> bool:
-        """ตรวจสอบว่ารหัสผ่านที่ป้อนถูกต้องหรือไม่"""
+        
         return bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8'))
 
 

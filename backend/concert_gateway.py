@@ -6,14 +6,12 @@ from typing import Optional, List
 class ConcertGateway:
     @classmethod
     def get_concerts(cls) -> List[Concert]:
-        """ดึงข้อมูลคอนเสิร์ตทั้งหมด"""
         with SessionLocal() as db:
             return db.query(Concert).all()
 
 
     @classmethod
     def get_concert_by_id(cls, concert_id: int) -> Optional[dict]:
-        """ดึงข้อมูลคอนเสิร์ตตาม ID"""
         with SessionLocal() as db:
             concert = db.query(Concert).filter(Concert.concert_id == concert_id).first()
             if concert:

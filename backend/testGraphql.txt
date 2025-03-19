@@ -17,7 +17,7 @@
 
 
 # mutation {
-#   addUser(displayName: "Dom2", username: "dom2@gmail.com", password: "123456") {
+#   addUser(displayName: "Dom7", username: "dom7@gmail.com", password: "123456") {
 #     id
 #     displayName
 #     username
@@ -105,7 +105,7 @@
 # }
 
 # mutation {
-#   createBooking(userId: 2, concertId: 1, zoneId: 1, seatCount: 1, seatIds: [1]) {
+#   createBooking(userId: 7, concertId: 1, zoneId: 1, seatCount: 2, seatIds: [1357, 1358]) {
 #     bookingId
 #     userId
 #     concertName
@@ -118,7 +118,7 @@
 # }
 
 # mutation {
-#   updateBookingStatus(bookingId: 8, newStatus: "cancelled") {
+#   updateBookingStatus(bookingId: 59, newStatus: "cancelled") {
 #     bookingId
 #     status
 #   }
@@ -126,7 +126,7 @@
 
 
 # mutation {
-#   confirmPaymentAndGenerateTickets(bookingId: 9) {
+#   confirmPaymentAndGenerateTickets(bookingId: 60) {
 #     ticketId
 #     bookingId
 #     userId
@@ -138,7 +138,7 @@
 # }
 
 # {
-#   getBookingsByUser(userId: 2) {
+#   getBookingsByUser(userId: 7) {
 #     bookingId
 #     concertName
 #     zoneName
@@ -150,7 +150,7 @@
 # }
 
 # {
-#   getTicketsByUser(userId: 2) {
+#   getTicketsByUser(userId: 7) {
 #     ticketId
 #     bookingId
 #     userId

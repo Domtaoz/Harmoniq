@@ -11,4 +11,4 @@ engine = create_engine(DATABASE_URL, echo=True)
 SessionLocal = sessionmaker(bind=engine, autoflush=False)
 Base = declarative_base()
 
-print("✅ Database Connected Successfully!")
+print("Database Connected Successfully!")

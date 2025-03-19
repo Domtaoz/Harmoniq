@@ -6,7 +6,7 @@ from typing import List
 class ZoneGateway:
     @classmethod
     def get_zones_by_concert(cls, concert_id: int) -> List[dict]:
-        """ดึงข้อมูลโซนที่นั่งของคอนเสิร์ตตาม concert_id"""
+    
         with SessionLocal() as db:
             zones = (
                 db.query(Zone)

@@ -36,7 +36,6 @@ class Query:
     
     @strawberry.field
     def get_concerts(self) -> List[ConcertType]:
-        """ดึงข้อมูลคอนเสิร์ตทั้งหมด"""
         concerts = ConcertGateway.get_concerts()
         return [
             ConcertType(
@@ -50,7 +49,6 @@ class Query:
 
     @strawberry.field
     def get_concert_by_id(self, concert_id: int) -> Optional[ConcertType]:
-        """แสดงรายละเอียดคอนเสิร์ตโดยค้นหาจาก concert_id"""
         concert = ConcertGateway.get_concert_by_id(concert_id)
         if concert:
             return ConcertType(
@@ -63,7 +61,6 @@ class Query:
 
     @strawberry.field
     def get_zones_by_concert(self, concert_id: int) -> List[ZoneType]:
-        """แสดงโซนโดยค้นหาจาก concert_id"""
         zones = ZoneGateway.get_zones_by_concert(concert_id)
         return [
             ZoneType(
@@ -76,7 +73,6 @@ class Query:
 
     @strawberry.field
     def get_seats_by_concert_zone(self, concert_id: int, zone_name: str) -> List[SeatType]:
-        """ค้นหาที่นั่งและแสดงสถานะโดยใช้ concert_id และ zone_name"""
         seats = SeatGateway.get_seats_by_concert_zone(concert_id, zone_name)
         return [
             SeatType(
@@ -90,7 +86,6 @@ class Query:
 
     @strawberry.field
     def get_bookings_by_user(self, user_id: int) -> List[BookingType]:
-        """ดึงข้อมูลการจองของผู้ใช้จากฐานข้อมูลโดยตรง"""
         bookings = BookingGateway.get_bookings_by_user(user_id)
         return [
         BookingType(
@@ -99,7 +94,7 @@ class Query:
             concert_id=b["concert_id"],  
             concert_name=b["concert_name"],
             zone_name=b["zone_name"],
-            seat_number=", ".join(b["seat_numbers"]) if b["seat_numbers"] else "No seats booked",  # ✅ ป้องกัน error กรณีที่ไม่มีที่นั่ง
+            seat_number=", ".join(b["seat_numbers"]) if b["seat_numbers"] else "No seats booked",  
             seat_count=b["seat_count"],
             total_price=b["total_price"],
             status=b["booking_status"]
@@ -108,7 +103,6 @@ class Query:
 
     @strawberry.field
     def get_tickets_by_user(self, user_id: int) -> List[TicketType]:
-        """ดึงข้อมูลตั๋วของผู้ใช้ที่ชำระเงินแล้ว"""
         tickets = TicketGateway.get_tickets_by_user(user_id)
         return [
         TicketType(
@@ -117,14 +111,13 @@ class Query:
             user_id=t["user_id"],
             concert_name=t["concert_name"],
             zone_name=t["zone_name"],
-            seat_number=", ".join(t["seat_number"]) if t["seat_number"] else "No seat assigned",  # ✅ ใช้ seat_numbers
+            seat_number=t["seat_number"].strip() if t["seat_number"] else "No seat assigned",  
             ticket_code=t["ticket_code"]
         ) for t in tickets
-    ]
+    ]  
         
     @strawberry.field
     def get_ticket_details_by_user(self, user_id: int) -> List[TicketType]:
-        """แสดงรายละเอียดตั๋วของผู้ใช้ที่ชำระเงินแล้ว"""
         return self.get_tickets_by_user(user_id)
 
     

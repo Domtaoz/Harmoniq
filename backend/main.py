@@ -21,7 +21,7 @@ def get_local_ip() -> str:
 
 # ฟังก์ชันสำหรับดึง Domain Name
 def get_domain_name() -> str:
-    return "dexto.com"
+    return "harmoniq.com"
 
 # การตั้งค่า FastAPI
 app = FastAPI()
@@ -69,7 +69,7 @@ def run():
     db_config["host"] = "127.0.0.1"  # ตั้ง IP ของฐานข้อมูลเป็น 127.0.0.1
     server_config["host"] = local_ip  # ตั้ง IP ของ FastAPI server เป็น IP ที่ได้จากฟังก์ชัน
 
-    # print(f"Running server on http://{domain_name}:{server_config['port']}")
+    print(f"Running server on http://{domain_name}:{server_config['port']}")
 
     # เรียกใช้งาน Uvicorn
     uvicorn.run("main:app", host=server_config["host"], port=int(server_config["port"]), reload=True)
