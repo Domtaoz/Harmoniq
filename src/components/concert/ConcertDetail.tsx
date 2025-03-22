@@ -19,6 +19,10 @@ const ConcertDetail: React.FC<ConcertDetailProps> = ({ concert }) => {
     navigate(`/concert/${concert.id}/seats`);
   };
 
+  console.log("Concert data:", concert);
+console.log("Artists:", concert?.artists);
+
+
   return (
     <div className="py-20">
       <div className="container mx-auto px-4">
@@ -91,24 +95,28 @@ const ConcertDetail: React.FC<ConcertDetailProps> = ({ concert }) => {
         </div>
 
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-          className="mt-16"
-        >
-          <h3 className="text-2xl font-bold mb-4">Artist</h3>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-            {[...Array(5)].map((_, index) => (
-              <div key={index} className="overflow-hidden rounded-lg aspect-square shadow-md">
-                <img 
-                  src={`https://source.unsplash.com/random/300x300?concert,artist&sig=${index}`} 
-                  alt={`Artist ${index+1}`} 
-                  className="w-full h-full object-cover hover:scale-110 transition-transform duration-500"
-                />
-              </div>
-            ))}
-          </div>
-        </motion.div>
+  initial={{ opacity: 0, y: 20 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.5, delay: 0.4 }}
+  className="mt-16"
+>
+  <h3 className="text-2xl font-bold mb-4">Artists</h3>
+  <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+    {concert.artists?.map((artist, index) => (
+      <div key={index} className="text-center">
+        <div className="overflow-hidden rounded-lg aspect-square shadow-md">
+          <img 
+            src={artist.image}  // ✅ Use the real artist image
+            alt={artist.name} 
+            className="w-full h-full object-cover hover:scale-110 transition-transform duration-500"
+          />
+        </div>
+        <p className="mt-2 font-semibold">{artist.name}</p> 
+      </div>
+    ))}
+  </div>
+</motion.div>
+
       </div>
     </div>
   );

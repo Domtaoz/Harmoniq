@@ -1,4 +1,9 @@
 
+export interface Artist {
+  name: string;
+  image: string;
+}
+
 export interface Concert {
   id: string;
   name: string;
@@ -6,6 +11,7 @@ export interface Concert {
   image: string;
   genre?: string;
   description?: string;
+  artists?: Artist[]; // ✅ Add artists field (optional)
 }
 
 export interface Seat {

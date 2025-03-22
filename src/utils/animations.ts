@@ -35,14 +35,28 @@ export const concertData = [
     id: '1',
     name: 'BODYSLAM',
     date: '18 April 2013',
-    image: '/lovable-uploads/babfe0b0-7f45-469e-b4d3-8ee9b3a4be23.png',
-    genre: 'Progressive Rock'
+    image: '/concert_images/bodyslam.jpg',
+    genre: 'Progressive Rock',
+    artists: [
+      {
+        name: 'Toon Bodyslam',
+        image: '/artists/toon-bodyslam.jpg'
+      },
+      {
+        name: 'Pid Bodyslam',
+        image: '/artists/toon-bodyslam.jpg'
+      },
+      {
+        name: 'Chad Bodyslam',
+        image: '/artists/toon-bodyslam.jpg'
+      }
+    ]
   },
   {
     id: '2',
     name: 'THREE MAN DOWN',
     date: '19 August 2023',
-    image: '/lovable-uploads/457bd668-9ceb-41aa-a74b-6948e092bd84.png',
+    image: '/concert_images/bodyslam.jpg',
     genre: 'Pop Rock'
   },
   {
