@@ -1,0 +1,71 @@
+CREATE TABLE users (
+    id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,  
+    display_name VARCHAR(255),  
+    username VARCHAR(191) NOT NULL UNIQUE,  
+    password CHAR(60) NOT NULL, 
+    password_updated_at DATETIME NOT NULL,
+    reset_token VARCHAR(100) DEFAULT NULL,
+    reset_token_expiry DATETIME DEFAULT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    profile_picture_url VARCHAR(500) DEFAULT NULL
+);
+
+CREATE TABLE concerts (
+    concert_id INT PRIMARY KEY AUTO_INCREMENT,
+    concert_name VARCHAR(255) NOT NULL,
+    band_name VARCHAR(255) NOT NULL,
+    concert_type VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE zones (
+    zone_id INT PRIMARY KEY AUTO_INCREMENT,
+    concert_id INT NOT NULL,
+    zone_name VARCHAR(50) NOT NULL,
+    price DECIMAL(10,2) NOT NULL,
+    FOREIGN KEY (concert_id) REFERENCES concerts(concert_id) ON DELETE CASCADE
+);
+
+CREATE TABLE seats (
+    seat_id INT PRIMARY KEY AUTO_INCREMENT,
+    concert_id INT NOT NULL,
+    zone_id INT NOT NULL,
+    seat_number VARCHAR(10) NOT NULL,
+    seat_status ENUM('available', 'booked') DEFAULT 'available',
+    FOREIGN KEY (concert_id) REFERENCES concerts(concert_id) ON DELETE CASCADE,
+    FOREIGN KEY (zone_id) REFERENCES zones(zone_id) ON DELETE CASCADE
+);
+
+CREATE TABLE bookings (
+    booking_id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT UNSIGNED NOT NULL,
+    concert_id INT NOT NULL,
+    zone_id INT NOT NULL,
+    seat_id INT NOT NULL,
+    booking_status ENUM('pending', 'confirmed', 'cancelled') DEFAULT 'pending',
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (concert_id) REFERENCES concerts(concert_id) ON DELETE CASCADE,
+    FOREIGN KEY (zone_id) REFERENCES zones(zone_id) ON DELETE CASCADE,
+    FOREIGN KEY (seat_id) REFERENCES seats(seat_id) ON DELETE CASCADE
+);
+
+CREATE TABLE booking_seats (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    booking_id INT NOT NULL,
+    seat_id INT NOT NULL,
+    FOREIGN KEY (booking_id) REFERENCES bookings(booking_id) ON DELETE CASCADE,
+    FOREIGN KEY (seat_id) REFERENCES seats(seat_id) ON DELETE CASCADE
+);
+
+CREATE TABLE tickets (
+    ticket_id INT PRIMARY KEY AUTO_INCREMENT,
+    booking_id INT NOT NULL,
+    user_id INT UNSIGNED NOT NULL,  
+    seat_id INT NOT NULL,  
+    ticket_code VARCHAR(20) UNIQUE NOT NULL,
+    concert_name VARCHAR(255) NOT NULL, 
+    zone_name VARCHAR(50) NOT NULL, 
+    seat_number VARCHAR(10) NOT NULL, 
+    FOREIGN KEY (booking_id) REFERENCES bookings(booking_id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (seat_id) REFERENCES seats(seat_id) ON DELETE CASCADE
+);
