@@ -1,0 +1,162 @@
+# query {
+#   getUsers {
+#     id
+#     displayName
+#     username
+#     profilePictureUrl
+#   }
+# }
+
+# query {
+#   getUserById(id: 2) {
+#     id
+#     displayName
+#     username
+#   }
+# }
+
+
+# mutation {
+#   addUser(displayName: "Dom7", username: "dom7@gmail.com", password: "123456") {
+#     id
+#     displayName
+#     username
+#   }
+# }
+
+# mutation {
+#   updateUser(id: 2, displayName: "Dom") {
+#     id
+#     displayName
+#     username
+#   }
+# }
+
+# mutation {
+#   updateUserAvatar(id: 9, profilePictureUrl: "https://media-hosting.imagekit.io//d1445da46d0b4630/screenshot_1741452399903.png?Expires=1836060401&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=V7um6nNEX4DCkvIqquYn5KvWVtfEKa0xv84rr00wdfOvb~L6i4tHQ2gO3Lg4xNXndrYq~GBja-0cywLpbt~yFeRj4rQjIPGvo-rdBT58jcl1jxQ5nBFR0TUBzLXgzxEkvXXPadyipMdsgtBMsTiLF6Hi6LpXJsM05iqr1I2osfLnwzNOzeJk1hFH6YwYgDXK2R~Q2ALBhXKF~CqJMFu6i9nKkfMve463hVJGUfaYSdSVU7aUIlt~EUnUSR7O3U6iIywqtK18itpidZjcLR1JmZMuj5xkSV4aUZUTiyTOewuctobXOBqPf03HVLn5cBHa7kEZ5FgTGKKcceExAjJogQ__") {
+#     id
+#     profilePictureUrl
+#   }
+# }
+
+# mutation {
+#   loginUser(username: "dom1@gmail.com", password: "123456") {
+#     success
+#     message
+#     user {
+#       id
+#       displayName
+#       username
+#       profilePictureUrl
+#     }
+#   }
+# }
+
+# mutation {
+#   logoutUser
+# }
+
+# mutation {
+#   deleteUser(id: 1)
+# }
+
+# {
+#   getUsers {
+#     id
+#     displayName
+#     username
+#     profilePictureUrl
+#   }
+# }
+
+# {
+#   getConcerts {
+#     concertId
+#     concertName
+#     bandName
+#     concertType
+#   }
+# }
+
+# {
+#   getConcertById(concertId: 1) {
+#     concertId
+#     concertName
+#     bandName
+#     concertType
+#   }
+# }
+
+
+# {
+#   getZonesByConcert(concertId: 1) {
+#     zoneId
+#     zoneName
+#     price
+#   }
+# }
+
+# {
+#   getSeatsByConcertZone(concertId: 1, zoneName: "A1") {
+#     seatId
+#     seatNumber
+#     seatStatus
+#   }
+# }
+
+# mutation {
+#   createBooking(userId: 7, concertId: 1, zoneId: 1, seatCount: 2, seatIds: [1357, 1358]) {
+#     bookingId
+#     userId
+#     concertName
+#     zoneName
+#     seatNumber
+#     seatCount
+#     totalPrice
+#     status
+#   }
+# }
+
+# mutation {
+#   updateBookingStatus(bookingId: 59, newStatus: "cancelled") {
+#     bookingId
+#     status
+#   }
+# }
+
+
+# mutation {
+#   confirmPaymentAndGenerateTickets(bookingId: 60) {
+#     ticketId
+#     bookingId
+#     userId
+#     concertName
+#     zoneName
+#     seatNumber
+#     ticketCode
+#   }
+# }
+
+# {
+#   getBookingsByUser(userId: 7) {
+#     bookingId
+#     concertName
+#     zoneName
+#     seatNumber
+#     seatCount
+#     totalPrice
+#     status
+#   }
+# }
+
+# {
+#   getTicketsByUser(userId: 7) {
+#     ticketId
+#     bookingId
+#     userId
+#     concertName
+#     zoneName
+#     seatNumber
+#     ticketCode
+#   }
+# }
