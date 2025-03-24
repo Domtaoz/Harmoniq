@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '@/context/AppContext';
 import { motion } from 'framer-motion';
-import { User, Check } from 'lucide-react';
+import { User, Check, X, LogOut } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -49,9 +49,7 @@ const Profile: React.FC = () => {
 
     if (state.auth.user) {
       try {
-        // Update name
         const updatedInfo = await updateUser(state.auth.user.id, displayName);
-        // Update avatar
         const updatedAvatar = await updateAvatar(state.auth.user.id, selectedAvatar);
 
         const updatedUser = {
@@ -87,6 +85,12 @@ const Profile: React.FC = () => {
     }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('userStore');
+    dispatch({ type: 'LOGOUT' });
+    navigate('/auth');
+  };
+
   return (
     <div className="min-h-screen pt-24 pb-16 flex items-center justify-center bg-brand-black">
       <motion.div
@@ -95,6 +99,15 @@ const Profile: React.FC = () => {
         transition={{ duration: 0.3 }}
         className="w-full max-w-md bg-white rounded-xl shadow-xl overflow-hidden"
       >
+        <div className="flex justify-between items-center p-4 border-b">
+          <button onClick={() => navigate(-1)} className="text-gray-500 hover:text-gray-700">
+            <X className="w-5 h-5" />
+          </button>
+          <button onClick={handleLogout} className="text-red-500 hover:text-red-700">
+            <LogOut className="w-5 h-5" />
+          </button>
+        </div>
+
         <div className="p-8">
           <h2 className="text-2xl font-bold text-center mb-6 text-amber-500">
             {isFirstTimeSetup ? 'Complete Your Profile' : 'Edit Profile'}

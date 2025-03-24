@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Music, Search, Ticket, User } from 'lucide-react';
@@ -64,11 +63,11 @@ const Navbar: React.FC = () => {
           </Link>
           
           {state.auth.isAuthenticated ? (
-            <Link to="/profile" className="flex items-center">
+            <Link to="/profile" className="flex items-center space-x-2">
               <div className="w-8 h-8 rounded-full bg-white overflow-hidden flex items-center justify-center">
-                {state.auth.user?.avatar ? (
+                {state.auth.user?.profilePictureUrl ? (
                   <img 
-                    src={state.auth.user.avatar} 
+                    src={state.auth.user.profilePictureUrl} 
                     alt={state.auth.user.username} 
                     className="w-full h-full object-cover"
                   />
@@ -76,6 +75,9 @@ const Navbar: React.FC = () => {
                   <User className="h-5 w-5 text-pink-500" />
                 )}
               </div>
+              <span className="text-white text-sm hidden md:inline">
+                {state.auth.user?.displayName || state.auth.user?.username}
+              </span>
             </Link>
           ) : (
             <Link 
