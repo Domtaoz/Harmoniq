@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useToast } from '@/hooks/use-toast';
 import { updateAvatar } from '@/graphql/mutations/updateUserAvatar';
+import { updateUser } from '@/graphql/mutations/updateUser';
 
 const profilePictures = [
   '/lovable-uploads/ccd731ff-8455-49ef-92b3-92b8ca80968e.png',
@@ -24,7 +25,7 @@ const Profile: React.FC = () => {
   const { state, dispatch } = useApp();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [username, setUsername] = useState(state.auth.user?.username || '');
+  const [displayName, setDisplayName] = useState(state.auth.user?.displayName || '');
   const [selectedAvatar, setSelectedAvatar] = useState(state.auth.user?.profilePictureUrl || profilePictures[0]);
   const [isFirstTimeSetup, setIsFirstTimeSetup] = useState(false);
 
@@ -41,19 +42,22 @@ const Profile: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!username.trim()) {
-      toast({ title: 'Error', description: 'Username cannot be empty', variant: 'destructive' });
+    if (!displayName.trim()) {
+      toast({ title: 'Error', description: 'Name cannot be empty', variant: 'destructive' });
       return;
     }
 
     if (state.auth.user) {
       try {
-        const updated = await updateAvatar(state.auth.user.id, selectedAvatar);
+        // Update name
+        const updatedInfo = await updateUser(state.auth.user.id, displayName);
+        // Update avatar
+        const updatedAvatar = await updateAvatar(state.auth.user.id, selectedAvatar);
 
         const updatedUser = {
           ...state.auth.user,
-          username,
-          profilePictureUrl: updated.profilePictureUrl
+          displayName: updatedInfo.displayName,
+          profilePictureUrl: updatedAvatar.profilePictureUrl,
         };
 
         dispatch({ type: 'LOGIN', payload: updatedUser });
@@ -74,7 +78,7 @@ const Profile: React.FC = () => {
         if (isFirstTimeSetup) {
           navigate('/');
         } else {
-          navigate(-1); 
+          navigate(-1);
         }
       } catch (err) {
         console.error(err);
@@ -98,13 +102,13 @@ const Profile: React.FC = () => {
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="username">Name</Label>
+              <Label htmlFor="displayName">Name</Label>
               <div className="relative">
                 <Input
-                  id="username"
+                  id="displayName"
                   type="text"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  value={displayName}
+                  onChange={(e) => setDisplayName(e.target.value)}
                   className="pl-10 pr-4 py-2 rounded-full"
                   placeholder="Your name"
                 />
