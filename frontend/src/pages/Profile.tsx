@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '@/context/AppContext';
@@ -8,8 +7,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useToast } from '@/hooks/use-toast';
+import { updateAvatar } from '@/graphql/mutations/updateUserAvatar';
 
-// Sample profile pictures
 const profilePictures = [
   '/lovable-uploads/ccd731ff-8455-49ef-92b3-92b8ca80968e.png',
   'https://api.dicebear.com/6.x/micah/svg?seed=Felix',
@@ -26,53 +25,60 @@ const Profile: React.FC = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [username, setUsername] = useState(state.auth.user?.username || '');
-  const [selectedAvatar, setSelectedAvatar] = useState(state.auth.user?.avatar || profilePictures[0]);
+  const [selectedAvatar, setSelectedAvatar] = useState(state.auth.user?.profilePictureUrl || profilePictures[0]);
   const [isFirstTimeSetup, setIsFirstTimeSetup] = useState(false);
 
   useEffect(() => {
-    // Check if user is logged in
     if (!state.auth.isAuthenticated) {
       navigate('/auth');
       return;
     }
-
-    // Check if this is first time setup (no avatar yet)
-    if (state.auth.isAuthenticated && !state.auth.user?.avatar) {
+    if (state.auth.isAuthenticated && !state.auth.user?.profilePictureUrl) {
       setIsFirstTimeSetup(true);
     }
   }, [state.auth.isAuthenticated, state.auth.user, navigate]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!username.trim()) {
-      toast({
-        title: "Error",
-        description: "Username cannot be empty",
-        variant: "destructive"
-      });
+      toast({ title: 'Error', description: 'Username cannot be empty', variant: 'destructive' });
       return;
     }
 
-    // Update user in context
     if (state.auth.user) {
-      const updatedUser = {
-        ...state.auth.user,
-        username,
-        avatar: selectedAvatar
-      };
-      
-      dispatch({ type: 'LOGIN', payload: updatedUser });
-      
-      toast({
-        title: "Success",
-        description: "Profile updated successfully",
-        variant: "default"
-      });
+      try {
+        const updated = await updateAvatar(state.auth.user.id, selectedAvatar);
 
-      // If it was first time setup, redirect to home
-      if (isFirstTimeSetup) {
-        navigate('/');
+        const updatedUser = {
+          ...state.auth.user,
+          username,
+          profilePictureUrl: updated.profilePictureUrl
+        };
+
+        dispatch({ type: 'LOGIN', payload: updatedUser });
+
+        localStorage.setItem(
+          'userStore',
+          JSON.stringify({
+            displayName: updatedUser.displayName,
+            userId: updatedUser.id,
+            profilePictureUrl: updatedUser.profilePictureUrl,
+            username: updatedUser.username,
+            email: updatedUser.email || ''
+          })
+        );
+
+        toast({ title: 'Success', description: 'Profile updated successfully', variant: 'default' });
+
+        if (isFirstTimeSetup) {
+          navigate('/');
+        } else {
+          navigate(-1); 
+        }
+      } catch (err) {
+        console.error(err);
+        toast({ title: 'Error', description: 'Failed to update profile', variant: 'destructive' });
       }
     }
   };
@@ -110,7 +116,7 @@ const Profile: React.FC = () => {
               <Label className="block mb-2">Profile Picture</Label>
               <div className="grid grid-cols-4 gap-3">
                 {profilePictures.map((pic, index) => (
-                  <div 
+                  <div
                     key={index}
                     onClick={() => setSelectedAvatar(pic)}
                     className={`relative cursor-pointer rounded-lg overflow-hidden border-2 ${

@@ -34,12 +34,13 @@ export interface Ticket {
   userId: string;
 }
 
-export interface User {
-  id: string;
+export type User = {
+  id: number;
   username: string;
-  email: string;
-  avatar?: string;
-}
+  displayName: string; 
+  profilePictureUrl?: string;
+  email?: string;
+};
 
 export interface AppState {
   selectedConcert: Concert | null;

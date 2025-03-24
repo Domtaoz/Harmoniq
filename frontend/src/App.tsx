@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -16,6 +15,7 @@ import Auth from "@/pages/Auth";
 import Profile from "@/pages/Profile";
 import NotFound from "@/pages/NotFound";
 import { LazyMotion, domAnimation } from "framer-motion";
+import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 
 // Create a client
 const queryClient = new QueryClient();
@@ -30,13 +30,55 @@ const App = () => (
           <BrowserRouter>
             <Navbar />
             <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/concert/:id" element={<ConcertDetail />} />
-              <Route path="/concert/:id/seats" element={<SeatSelection />} />
-              <Route path="/payment" element={<Payment />} />
-              <Route path="/ticket" element={<Ticket />} />
+              <Route
+                path="/"
+                element={
+                  <ProtectedRoute>
+                    <Home />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/concert/:id"
+                element={
+                  <ProtectedRoute>
+                    <ConcertDetail />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/concert/:id/seats"
+                element={
+                  <ProtectedRoute>
+                    <SeatSelection />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/payment"
+                element={
+                  <ProtectedRoute>
+                    <Payment />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/ticket"
+                element={
+                  <ProtectedRoute>
+                    <Ticket />
+                  </ProtectedRoute>
+                }
+              />
               <Route path="/auth" element={<Auth />} />
-              <Route path="/profile" element={<Profile />} />
+              <Route
+                path="/profile"
+                element={
+                  <ProtectedRoute>
+                    <Profile />
+                  </ProtectedRoute>
+                }
+              />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
