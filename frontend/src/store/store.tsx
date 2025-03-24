@@ -1,82 +1,73 @@
-import { useSignal, useVisibleTask$, $ } from '@builder.io/qwik';
-import { useNavigate } from '@builder.io/qwik-city';
-import API_URL from '~/configURL/config';
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
+import { useNavigate } from 'react-router-dom';
+import API_URL from '@/configURL/config';
+
+interface UserStore {
+  displayName: string;
+  userId: string;
+  profilePictureUrl: string;
+  isLoggedIn: boolean;
+  updateStore: (name: string, id: string, avatar: string) => void;
+  logoutUser: () => void;
+}
 
 const STORAGE_KEY = 'userStore';
 
-export const useUserStore = () => {
-  const displayName = useSignal('');
-  const userId = useSignal('');
-  const profilePictureUrl = useSignal('');
-  const isLoggedIn = useSignal(false);
-  const navigate = useNavigate();
+export const useUserStore = create<UserStore>()(
+  persist(
+    (set, get) => ({
+      displayName: '',
+      userId: '',
+      profilePictureUrl: '',
+      isLoggedIn: false,
 
-  useVisibleTask$(() => {
-    const storedUser = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-    if (storedUser.displayName && storedUser.userId) {
-      displayName.value = storedUser.displayName;
-      userId.value = storedUser.userId;
-      profilePictureUrl.value = storedUser.profilePictureUrl || '';
-      isLoggedIn.value = true;
-    } else {
-      isLoggedIn.value = false;
-      console.warn("User is not logged in. Redirecting to /login...");
-      navigate("/login");
-    }
-
-    
-    (window as any).logoutUser = logoutUser;
-    console.log("🔹 พิมพ์ `logoutUser()` ใน Console เพื่อออกจากระบบ");
-  });
-
-  const updateStore = $((newDisplayName: string, newUserId: string, newProfilePictureUrl: string) => {
-    displayName.value = newDisplayName;
-    userId.value = newUserId;
-    profilePictureUrl.value = newProfilePictureUrl;
-    isLoggedIn.value = true;
-    localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify({ displayName: newDisplayName, userId: newUserId, profilePictureUrl: newProfilePictureUrl })
-    );
-  });
-
-  const logoutUser = $(async () => {
-    if (!isLoggedIn.value) {
-      console.warn("User is already logged out.");
-      return;
-    }
-
-    console.log(`Logging out: ${displayName.value} (ID: ${userId.value})`);
-
-    try {
-      const response = await fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          query: `
-            mutation {
-              logoutUser
-            }
-          `,
+      updateStore: (name, id, avatar) =>
+        set({
+          displayName: name,
+          userId: id,
+          profilePictureUrl: avatar,
+          isLoggedIn: true,
         }),
-      });
 
-      const result = await response.json();
-      if (result.data?.logoutUser) {
-        console.log(`User ${displayName.value} has logged out successfully.`);
-        displayName.value = '';
-        userId.value = '';
-        profilePictureUrl.value = '';
-        isLoggedIn.value = false;
-        localStorage.removeItem(STORAGE_KEY);
-        navigate("/login");
-      } else {
-        console.error("Logout failed:", result.errors || "Unknown error");
-      }
-    } catch (error) {
-      console.error("Failed to logout due to network error:", error);
+      logoutUser: async () => {
+        const { displayName, userId } = get();
+        console.log(`Logging out: ${displayName} (${userId})`);
+
+        try {
+          const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              query: `
+                mutation {
+                  logoutUser
+                }
+              `,
+            }),
+          });
+
+          const result = await response.json();
+          if (result.data?.logoutUser) {
+            console.log('✅ Logged out');
+            set({
+              displayName: '',
+              userId: '',
+              profilePictureUrl: '',
+              isLoggedIn: false,
+            });
+            localStorage.removeItem(`zustand-${STORAGE_KEY}`);
+            window.location.href = '/login'; 
+          } else {
+            console.error('Logout failed', result.errors);
+          }
+        } catch (err) {
+          console.error('Network error during logout', err);
+        }
+      },
+    }),
+    {
+      name: STORAGE_KEY,
     }
-  });
-
-  return { displayName, userId, profilePictureUrl, isLoggedIn, updateStore, logoutUser };
-};
+  )
+);
