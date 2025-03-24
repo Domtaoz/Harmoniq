@@ -63,7 +63,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ initialMode = 'login' }) => {
         );
         navigate('/');
       } else {
-        const user = await addUser(username, username, password);
+        const user = await addUser(username, email, password);
         dispatch({ type: 'LOGIN', payload: user });
         localStorage.setItem(
           'userStore',
@@ -83,7 +83,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ initialMode = 'login' }) => {
   };
 
   return (
-    <div className="pt-24 pb-16 min-h-screen flex items-center justify-center">
+    <div className="pt-24 pb-16 min-h-screen flex items-center justify-center bg-brand-black">
       <div className="w-full max-w-md">
         <AnimatePresence mode="wait">
           <motion.div
