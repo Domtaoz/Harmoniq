@@ -1,10 +1,10 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, User, Mail } from 'lucide-react';
 import { useApp } from '@/context/AppContext';
-import { v4 as uuidv4 } from 'uuid';
 import { motion, AnimatePresence } from 'framer-motion';
+import { loginUser } from '@/graphql/mutations/loginUser';
+import { addUser } from '@/graphql/mutations/addUser';
 
 interface AuthModalProps {
   initialMode?: 'login' | 'register';
@@ -22,7 +22,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ initialMode = 'login' }) => {
   const { dispatch } = useApp();
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
@@ -30,7 +30,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ initialMode = 'login' }) => {
       setError('Please fill in all fields');
       return;
     }
-    
+
     if (mode === 'login' && (!username.trim() || !password.trim())) {
       setError('Please fill in all fields');
       return;
@@ -41,29 +41,42 @@ const AuthModal: React.FC<AuthModalProps> = ({ initialMode = 'login' }) => {
       return;
     }
 
-    // Simulate authentication
-    setTimeout(() => {
-      const user = {
-        id: uuidv4(),
-        username,
-        email: email || `${username}@example.com`, // Provide a default email if not provided
-        avatar: mode === 'login' ? `https://api.dicebear.com/6.x/micah/svg?seed=${username}` : ''
-      };
+    try {
+      if (mode === 'login') {
+        const res = await loginUser(username, password);
+        if (!res.success) {
+          setError(res.message);
+          return;
+        }
 
-      dispatch({ type: 'LOGIN', payload: user });
-      
-      // Redirect based on mode - to profile for registration, to home for login
-      if (mode === 'register') {
-        navigate('/profile'); // New registration goes to profile setup
-      } else {
+        const user = res.user;
+        dispatch({ type: 'LOGIN', payload: user });
+        localStorage.setItem(
+          'userStore',
+          JSON.stringify({
+            displayName: user.displayName,
+            userId: user.id,
+            profilePictureUrl: user.profilePictureUrl || '',
+          })
+        );
         navigate('/');
+      } else {
+        const user = await addUser(username, username, password);
+        dispatch({ type: 'LOGIN', payload: user });
+        localStorage.setItem(
+          'userStore',
+          JSON.stringify({
+            displayName: user.displayName,
+            userId: user.id,
+            profilePictureUrl: user.profilePictureUrl || '',
+          })
+        );
+        navigate('/profile');
       }
-    }, 1000);
-  };
-
-  const toggleMode = () => {
-    setMode(prev => (prev === 'login' ? 'register' : 'login'));
-    setError('');
+    } catch (err: any) {
+      console.error(err);
+      setError(err.message || 'Something went wrong');
+    }
   };
 
   return (
@@ -164,7 +177,10 @@ const AuthModal: React.FC<AuthModalProps> = ({ initialMode = 'login' }) => {
                 <p className="text-gray-600 dark:text-gray-400">
                   {mode === 'login' ? "Don't have an account?" : "Already have an account?"}{' '}
                   <button
-                    onClick={toggleMode}
+                    onClick={() => {
+                      setMode(mode === 'login' ? 'register' : 'login');
+                      setError('');
+                    }}
                     className="text-brand-pink font-medium hover:underline transition-all"
                   >
                     {mode === 'login' ? 'Register' : 'Login'}

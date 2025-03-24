@@ -1,4 +1,3 @@
-
 import React from 'react';
 import AuthModalComponent from '@/components/auth/AuthModal';
 import { useSearchParams } from 'react-router-dom';
