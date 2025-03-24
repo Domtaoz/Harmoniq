@@ -63,14 +63,14 @@ const Profile: React.FC = () => {
         localStorage.setItem(
           'userStore',
           JSON.stringify({
+            id: updatedUser.id,
             displayName: updatedUser.displayName,
-            userId: updatedUser.id,
-            profilePictureUrl: updatedUser.profilePictureUrl,
             username: updatedUser.username,
+            profilePictureUrl: updatedUser.profilePictureUrl,
             email: updatedUser.email || ''
           })
         );
-
+        
         toast({ title: 'Success', description: 'Profile updated successfully', variant: 'default' });
 
         if (isFirstTimeSetup) {

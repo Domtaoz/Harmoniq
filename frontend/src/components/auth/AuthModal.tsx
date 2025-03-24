@@ -51,12 +51,14 @@ const AuthModal: React.FC<AuthModalProps> = ({ initialMode = 'login' }) => {
 
         const user = res.user;
         dispatch({ type: 'LOGIN', payload: user });
+
         localStorage.setItem(
           'userStore',
           JSON.stringify({
             displayName: user.displayName,
-            userId: user.id,
+            id: user.id,
             profilePictureUrl: user.profilePictureUrl || '',
+            username: user.username,
           })
         );
         navigate('/');
@@ -67,8 +69,9 @@ const AuthModal: React.FC<AuthModalProps> = ({ initialMode = 'login' }) => {
           'userStore',
           JSON.stringify({
             displayName: user.displayName,
-            userId: user.id,
+            id: user.id, 
             profilePictureUrl: user.profilePictureUrl || '',
+            username: user.username,
           })
         );
         navigate('/profile');

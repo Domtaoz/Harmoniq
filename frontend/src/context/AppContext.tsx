@@ -1,6 +1,7 @@
 
 import React, { createContext, useContext, useReducer, ReactNode } from 'react';
 import { AppState, Concert, Seat, Ticket, User } from '@/types';
+import { useEffect } from 'react';
 
 // Initial state
 const initialState: AppState = {
@@ -94,6 +95,24 @@ interface AppProviderProps {
 
 export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
+
+  useEffect(() => {
+    const stored = localStorage.getItem('userStore');
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      if (parsed.id && parsed.displayName) {
+        dispatch({
+          type: 'LOGIN',
+          payload: {
+            id: parsed.id,
+            displayName: parsed.displayName,
+            username: parsed.username,
+            profilePictureUrl: parsed.profilePictureUrl || '',
+          },
+        });
+      }
+    }
+  }, []);
 
   return (
     <AppContext.Provider value={{ state, dispatch }}>
