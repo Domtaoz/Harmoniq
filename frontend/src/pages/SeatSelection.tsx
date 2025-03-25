@@ -49,18 +49,21 @@ const SeatSelection: React.FC = () => {
   }
 
   const handleSeatClick = (seat: Seat) => {
-    if (seat.seatStatus === "SeatStatus.booked") return
-
-    const isSelected = state.selectedSeats.some((s) => s.seatId === seat.seatId)
-    const zone = zones.find((z) => z.zoneName === seat.zoneName)
-    const price = zone?.price ?? 0
-
+    if (seat.seatStatus === "SeatStatus.booked") return;
+  
+    const isSelected = state.selectedSeats.some((s) => s.seatId === seat.seatId);
+  
     if (isSelected) {
-      dispatch({ type: "REMOVE_SEAT", payload: seat.seatId.toString() })
+
+      dispatch({ type: 'REMOVE_SEAT', payload: seat.seatId.toString() })
+
     } else {
-      dispatch({ type: "ADD_SEAT", payload: { ...seat, price } as any })
+      const zone = zones.find((z) => z.zoneName === seat.zoneName);
+      const price = zone?.price ?? 0;
+      dispatch({ type: "ADD_SEAT", payload: { ...seat, price } as any });
     }
-  }
+  };
+  
 
   const handleSubmit = () => {
     navigate("/payment")

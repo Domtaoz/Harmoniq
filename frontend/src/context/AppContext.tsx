@@ -40,7 +40,7 @@ const reducer = (state: AppState, action: Action): AppState => {
     case 'REMOVE_SEAT':
       return {
         ...state,
-        selectedSeats: state.selectedSeats.filter(seat => seat.id !== action.payload)
+        selectedSeats: state.selectedSeats.filter(seat => seat.seatId.toString() !== action.payload)
       };
     case 'CLEAR_SEATS':
       return {
