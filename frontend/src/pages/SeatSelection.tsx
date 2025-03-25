@@ -2,10 +2,10 @@ import type React from "react";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useApp } from "@/context/AppContext";
-import type { Seat } from "@/types";
+import type { Seat, Zone } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 import client from "@/lib/graphqlClient";
-import { GET_SEATS_BY_CONCERT_ZONE } from "@/graphql/queries";
+import { GET_SEATS_BY_CONCERT_ZONE, GET_ZONES_BY_CONCERT } from "@/graphql/queries";
 import { Check, X } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -14,21 +14,19 @@ const SeatSelection: React.FC = () => {
   const concertId = Number(id);
   const navigate = useNavigate();
   const { state, dispatch } = useApp();
-  const [selectedZone, setSelectedZone] = useState<string | null>(null);
   const [selectedSection, setSelectedSection] = useState<string | null>(null);
-  const [step, setStep] = useState<"zone" | "section" | "seats">("zone");
 
-  const zoneData = [
-    { id: "A", name: "Zone A", price: 3000, color: "bg-green-500" },
-    { id: "B", name: "Zone B", price: 1500, color: "bg-yellow-500" },
-    { id: "C", name: "Zone C", price: 1000, color: "bg-blue-500" },
-  ];
-
-  const sectionData = [
-    "A1", "A2", "A3",
-    "B1", "B2", "B3",
-    "C1", "C2", "C3"
-  ];
+  const { data: zones = [] } = useQuery({
+    queryKey: ["zones", concertId],
+    queryFn: async () => {
+      const res = await client.request<{ getZonesByConcert: Zone[] }>(
+        GET_ZONES_BY_CONCERT,
+        { concertId }
+      );
+      return res.getZonesByConcert;
+    },
+    enabled: !!concertId,
+  });
 
   const { data: seats = [], isLoading } = useQuery({
     queryKey: ["seats", concertId, selectedSection],
@@ -43,26 +41,8 @@ const SeatSelection: React.FC = () => {
     enabled: !!concertId && !!selectedSection,
   });
 
-  const handleZoneSelect = (zone: string) => {
-    setSelectedZone(zone);
-    setStep("section");
-  };
-
   const handleSectionSelect = (section: string) => {
     setSelectedSection(section);
-    setStep("seats");
-  };
-
-  const handleBackToZones = () => {
-    setSelectedZone(null);
-    setSelectedSection(null);
-    setStep("zone");
-    dispatch({ type: "CLEAR_SEATS" });
-  };
-
-  const handleBackToSections = () => {
-    setSelectedSection(null);
-    setStep("section");
     dispatch({ type: "CLEAR_SEATS" });
   };
 
@@ -72,7 +52,10 @@ const SeatSelection: React.FC = () => {
     if (isSelected) {
       dispatch({ type: "REMOVE_SEAT", payload: seat.seatId.toString() });
     } else {
-      dispatch({ type: "ADD_SEAT", payload: seat });
+      const zone = zones.find((z) => z.zoneName === seat.zoneName);
+      const price = zone?.price ?? 0;
+      dispatch({ type: "ADD_SEAT", payload: { ...seat, price } as any });
+
     }
   };
 
@@ -81,101 +64,61 @@ const SeatSelection: React.FC = () => {
   };
 
   const seatsByRow = seats.reduce((acc, seat) => {
-    if (!acc[seat.row]) acc[seat.row] = [];
-    acc[seat.row].push(seat);
+    const row = seat.seatNumber?.charAt(0) ?? "";
+    if (!acc[row]) acc[row] = [];
+    acc[row].push(seat);
     return acc;
   }, {} as Record<string, Seat[]>);
 
-  const totalPrice = state.selectedSeats.reduce((sum, s) => {
-    const zone = zoneData.find((z) => s.seatNumber?.startsWith(z.id));
-    return sum + (zone?.price || 0);
-  }, 0);
+  const totalPrice = state.selectedSeats.reduce((sum, s) => sum + (s as any).price, 0);
 
   return (
     <div className="pt-24 pb-16 bg-brand-black min-h-screen">
-      <div className="container mx-auto px-4">
-        {step === "zone" && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5 }}
-          >
-            <h2 className="text-2xl font-bold text-white mb-6 text-center">Select Your Zone</h2>
+      <div className="container mx-auto px-4 text-center">
+        <h2 className="text-2xl font-bold text-white mb-6">
+          Select Seats {selectedSection && `in Section ${selectedSection}`}
+        </h2>
 
+        {!selectedSection ? (
+          <div className="space-y-6">
             <div className="mb-8 flex justify-center">
               <div className="bg-red-500 text-white font-bold uppercase text-xl py-4 w-64 text-center">STAGE</div>
             </div>
-
-            <div className="space-y-6">
-              {["A", "B", "C"].map((zoneLetter) => (
-                <div key={zoneLetter} className="flex justify-center gap-6">
-                  {sectionData
-                    .filter((sec) => sec.startsWith(zoneLetter))
-                    .map((section) => (
-                      <div
-                        key={section}
-                        onClick={() => handleZoneSelect(zoneLetter)}
-                        className={`cursor-pointer w-28 h-16 rounded-lg flex items-center justify-center text-white font-bold
-                          ${
-                            zoneLetter === "A"
-                              ? "bg-green-500"
-                              : zoneLetter === "B"
-                              ? "bg-yellow-500"
-                              : "bg-blue-500"
-                          }`}
-                      >
-                        {section}
-                      </div>
-                    ))}
-                </div>
-              ))}
-            </div>
+            {["A", "B", "C"].map((zoneLetter) => (
+              <div key={zoneLetter} className="flex justify-center gap-6">
+                {zones
+                  .filter((z) => z.zoneName.startsWith(zoneLetter))
+                  .map((zone) => (
+                    <div
+                      key={zone.zoneName}
+                      onClick={() => handleSectionSelect(zone.zoneName)}
+                      className="cursor-pointer w-20 h-16 rounded-lg bg-gray-600 text-white font-bold flex items-center justify-center"
+                    >
+                      {zone.zoneName}
+                    </div>
+                  ))}
+              </div>
+            ))}
 
             <div className="mt-8 border border-red-600 p-4 rounded-lg w-fit mx-auto space-y-2">
-              {zoneData.map((zone) => (
-                <div key={zone.id} className="flex items-center gap-4">
-                  <div className={`w-5 h-5 rounded-full ${zone.color}`} />
-                  <span className="text-white font-bold">{zone.price.toLocaleString()} BATH</span>
+              {zones.map((zone) => (
+                <div key={zone.zoneName} className="flex items-center gap-4 text-white">
+                  <div className="w-5 h-5 rounded-full bg-white" />
+                  <span className="font-bold">
+                    {zone.zoneName} - {zone.price.toLocaleString()} BATH
+                  </span>
                 </div>
               ))}
             </div>
-          </motion.div>
-        )}
-
-        {step === "section" && selectedZone && (
-          <div>
-            <button onClick={handleBackToZones} className="text-white mb-4">
-              &larr; Back to Zones
-            </button>
-            <h2 className="text-2xl font-bold text-white mb-6">
-              Select Section in Zone {selectedZone}
-            </h2>
-
-            <div className="flex justify-center gap-6 flex-wrap">
-              {sectionData
-                .filter((s) => s.startsWith(selectedZone))
-                .map((section) => (
-                  <button
-                    key={section}
-                    onClick={() => handleSectionSelect(section)}
-                    className="bg-brand-pink text-white px-6 py-3 rounded-lg font-semibold hover:bg-pink-600"
-                  >
-                    {section}
-                  </button>
-                ))}
-            </div>
           </div>
-        )}
-
-        {step === "seats" && selectedSection && (
-          <div className="mt-10">
-            <button onClick={handleBackToSections} className="text-white mb-4">
+        ) : (
+          <div>
+            <button
+              onClick={() => setSelectedSection(null)}
+              className="text-white mb-4 block text-left"
+            >
               &larr; Back to Sections
             </button>
-
-            <h2 className="text-2xl font-bold text-white mb-6 text-center">
-              Select Seats in Section {selectedSection}
-            </h2>
 
             <div className="mb-6 flex justify-center">
               <div className="bg-red-500 text-white font-bold uppercase text-xl py-4 w-64 text-center">STAGE</div>
@@ -195,7 +138,7 @@ const SeatSelection: React.FC = () => {
                         return (
                           <div
                             key={seat.seatId}
-                            onClick={() => !isBooked && handleSeatClick(seat)}
+                            onClick={() => handleSeatClick(seat)}
                             className={`w-10 h-10 rounded-full flex items-center justify-center font-bold cursor-pointer
                               ${
                                 isBooked
@@ -231,7 +174,8 @@ const SeatSelection: React.FC = () => {
             </div>
 
             <div className="text-center text-white mt-6 text-xl">
-              Total Price: <span className="font-bold">{totalPrice.toLocaleString()} BATH</span>
+              Selected: <strong>{state.selectedSeats.length}</strong> seat(s) <br />
+              Total Price: <strong>{totalPrice.toLocaleString()} BATH</strong>
             </div>
 
             <div className="flex justify-center mt-8">
