@@ -10,10 +10,15 @@ interface ConcertDetailProps {
 }
 
 const ConcertDetail: React.FC<ConcertDetailProps> = ({ concert }) => {
-  const { dispatch } = useApp();
+  const { state, dispatch } = useApp();
   const navigate = useNavigate();
 
   const handleBookTicket = () => {
+    if (!state.auth.user) {
+      navigate('/auth'); // Redirect to login/register if not logged in
+      return;
+    }
+
     dispatch({ type: 'SELECT_CONCERT', payload: concert });
     navigate(`/concert/${concert.id}/seats`);
   };
@@ -59,7 +64,7 @@ const ConcertDetail: React.FC<ConcertDetailProps> = ({ concert }) => {
                 </div>
                 <div>
                   <div className="text-sm text-brand-gray">Artist</div>
-                  <div className="font-medium text-lg">{concert.artists?.map(a => a.name).join(', ')}</div>
+                  <div className="font-medium text-lg">{concert.artists.map(a => a.name).join(', ')}</div>
                 </div>
               </div>
 
@@ -89,30 +94,26 @@ const ConcertDetail: React.FC<ConcertDetailProps> = ({ concert }) => {
           </motion.div>
         </div>
 
-        {concert.artists && concert.artists.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-            className="mt-16"
-          >
-            <h3 className="text-2xl font-bold mb-4">Artist</h3>
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-              {concert.artists.map((artist, index) => (
-                <div key={index} className="flex flex-col items-center">
-                  <div className="overflow-hidden rounded-lg aspect-square shadow-md w-full">
-                    <img 
-                      src={artist.image} 
-                      alt={artist.name} 
-                      className="w-full h-full object-cover hover:scale-110 transition-transform duration-500"
-                    />
-                  </div>
-                  <p className="mt-3 text-base font-semibold text-center">{artist.name}</p>
-                </div>
-              ))}
-            </div>
-          </motion.div>
-        )}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+          className="mt-16"
+        >
+          <h3 className="text-2xl font-bold mb-4">Artist</h3>
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+            {concert.artists.map((artist, index) => (
+              <div key={index} className="overflow-hidden rounded-lg aspect-square shadow-md">
+                <img 
+                  src={artist.image} 
+                  alt={artist.name} 
+                  className="w-full h-full object-cover hover:scale-110 transition-transform duration-500"
+                />
+                <p className="text-center text-sm mt-1 font-medium text-gray-700 dark:text-white">{artist.name}</p>
+              </div>
+            ))}
+          </div>
+        </motion.div>
       </div>
     </div>
   );

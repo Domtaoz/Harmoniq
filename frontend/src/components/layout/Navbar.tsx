@@ -1,13 +1,13 @@
-
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Music, Search, Ticket, User } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Music, Search, Ticket, User, LogOut } from 'lucide-react';
 import { useApp } from '@/context/AppContext';
 import SearchInput from '@/components/ui/SearchInput';
 
 const Navbar: React.FC = () => {
-  const { state } = useApp();
+  const { state, dispatch } = useApp();
   const location = useLocation();
+  const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -18,6 +18,15 @@ const Navbar: React.FC = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const handleLogout = () => {
+    const confirmed = window.confirm('Are you sure you want to log out?');
+    if (confirmed) {
+      dispatch({ type: 'LOGOUT' });
+      localStorage.removeItem('loggedInUser');
+      navigate('/');
+    }
+  };
 
   return (
     <header
@@ -62,21 +71,28 @@ const Navbar: React.FC = () => {
             <Ticket className="h-6 w-6" />
             <span className="hidden md:inline ml-1">Ticket</span>
           </Link>
-          
           {state.auth.isAuthenticated ? (
-            <Link to="/profile" className="flex items-center">
-              <div className="w-8 h-8 rounded-full bg-white overflow-hidden flex items-center justify-center">
-                {state.auth.user?.avatar ? (
-                  <img 
-                    src={state.auth.user.avatar} 
-                    alt={state.auth.user.username} 
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <User className="h-5 w-5 text-pink-500" />
-                )}
-              </div>
-            </Link>
+            <>
+              <Link to="/profile" className="flex items-center">
+                <div className="w-8 h-8 rounded-full bg-white overflow-hidden flex items-center justify-center">
+                  {state.auth.user?.avatar ? (
+                    <img 
+                      src={state.auth.user.avatar} 
+                      alt="Profile" 
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <User className="h-5 w-5 text-pink-500" />
+                  )}
+                </div>
+              </Link>
+              <button 
+                onClick={handleLogout} 
+                className="w-8 h-8 rounded-full bg-white flex items-center justify-center hover:scale-105 transition"
+              >
+                <LogOut className="h-5 w-5 text-pink-500" />
+              </button>
+            </>
           ) : (
             <Link 
               to="/auth" 

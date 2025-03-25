@@ -1,7 +1,6 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Eye, EyeOff, User, Mail } from 'lucide-react';
+import { Eye, EyeOff, Mail } from 'lucide-react';
 import { useApp } from '@/context/AppContext';
 import { v4 as uuidv4 } from 'uuid';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -12,7 +11,6 @@ interface AuthModalProps {
 
 const AuthModal: React.FC<AuthModalProps> = ({ initialMode = 'login' }) => {
   const [mode, setMode] = useState<'login' | 'register'>(initialMode);
-  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -26,12 +24,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ initialMode = 'login' }) => {
     e.preventDefault();
     setError('');
 
-    if (mode === 'register' && (!username.trim() || !email.trim() || !password.trim())) {
-      setError('Please fill in all fields');
-      return;
-    }
-    
-    if (mode === 'login' && (!username.trim() || !password.trim())) {
+    if (!email.trim() || !password.trim()) {
       setError('Please fill in all fields');
       return;
     }
@@ -45,16 +38,14 @@ const AuthModal: React.FC<AuthModalProps> = ({ initialMode = 'login' }) => {
     setTimeout(() => {
       const user = {
         id: uuidv4(),
-        username,
-        email: email || `${username}@example.com`, // Provide a default email if not provided
-        avatar: mode === 'login' ? `https://api.dicebear.com/6.x/micah/svg?seed=${username}` : ''
+        email,
+        avatar: `https://api.dicebear.com/6.x/micah/svg?seed=${email}`
       };
 
       dispatch({ type: 'LOGIN', payload: user });
-      
-      // Redirect based on mode - to profile for registration, to home for login
+
       if (mode === 'register') {
-        navigate('/profile'); // New registration goes to profile setup
+        navigate('/profile');
       } else {
         navigate('/');
       }
@@ -92,27 +83,14 @@ const AuthModal: React.FC<AuthModalProps> = ({ initialMode = 'login' }) => {
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="relative">
                   <input
-                    type="text"
-                    placeholder="Username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
+                    type="email"
+                    placeholder="Email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     className="w-full px-4 py-3 pl-10 rounded-full border border-gray-300 focus:border-brand-pink focus:ring-2 focus:ring-brand-pink/30 focus:outline-none transition-all dark:bg-gray-800 dark:border-gray-600"
                   />
-                  <User className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" />
+                  <Mail className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" />
                 </div>
-
-                {mode === 'register' && (
-                  <div className="relative">
-                    <input
-                      type="email"
-                      placeholder="Email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="w-full px-4 py-3 pl-10 rounded-full border border-gray-300 focus:border-brand-pink focus:ring-2 focus:ring-brand-pink/30 focus:outline-none transition-all dark:bg-gray-800 dark:border-gray-600"
-                    />
-                    <Mail className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" />
-                  </div>
-                )}
 
                 <div className="relative">
                   <input
@@ -122,7 +100,6 @@ const AuthModal: React.FC<AuthModalProps> = ({ initialMode = 'login' }) => {
                     onChange={(e) => setPassword(e.target.value)}
                     className="w-full px-4 py-3 pl-10 pr-10 rounded-full border border-gray-300 focus:border-brand-pink focus:ring-2 focus:ring-brand-pink/30 focus:outline-none transition-all dark:bg-gray-800 dark:border-gray-600"
                   />
-                  <User className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
@@ -141,7 +118,6 @@ const AuthModal: React.FC<AuthModalProps> = ({ initialMode = 'login' }) => {
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       className="w-full px-4 py-3 pl-10 pr-10 rounded-full border border-gray-300 focus:border-brand-pink focus:ring-2 focus:ring-brand-pink/30 focus:outline-none transition-all dark:bg-gray-800 dark:border-gray-600"
                     />
-                    <User className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" />
                     <button
                       type="button"
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
