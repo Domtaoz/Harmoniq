@@ -17,7 +17,7 @@ export interface Concert {
 export interface Seat {
   seatId: number;
   seatNumber: string;
-  seatStatus: 'available' | 'booked';
+  seatStatus: 'SeatStatus.available' | 'SeatStatus.booked';
   concertId: number;
   zoneName: string;
 }
