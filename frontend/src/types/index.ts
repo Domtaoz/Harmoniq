@@ -14,16 +14,14 @@ export interface Concert {
   }[];
 }
 
-
-
 export interface Seat {
-  id: string;
-  section: string;
-  row: string;
-  number: number;
-  price: number;
-  status: 'available' | 'unavailable' | 'selected';
+  seatId: number;
+  seatNumber: string;
+  seatStatus: 'available' | 'booked';
+  concertId: number;
+  zoneName: string;
 }
+
 
 export interface Ticket {
   id: string;
