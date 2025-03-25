@@ -112,7 +112,7 @@ export const generateConcerts = (): Concert[] => {
       genre: "K-Pop",
       artists: [
         {
-          name: "my c",
+          name: "Lisa Blackpinks",
           image: "https://img2.pic.in.th/pic/LisaBlackpink.jpg"
         },
         {
