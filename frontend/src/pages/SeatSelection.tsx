@@ -435,6 +435,30 @@ const SeatSelection: React.FC = () => {
                 {state.selectedSeats.length > 0 ? "Proceed to Payment" : "Please select at least one seat"}
               </button>
             </motion.div>
+
+            {/* แสดงรายละเอียดของที่เลือก */}
+            <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.7 }}
+            className="p-6 border border-gray-600 rounded-lg bg-gray-900 text-white mb-8"
+            >
+            <h3 className="text-lg font-bold mb-4">Selected Details</h3>
+  
+            <p><strong>Zone:</strong> {selectedZone}</p>
+            <p><strong>Section:</strong> {selectedSection}</p>
+  
+            <p className="mt-2"><strong>Seats:</strong>  
+            {state.selectedSeats.length > 0
+              ? state.selectedSeats.map(seat => ` ${seat.number}`).join(", ")
+            : " No seats selected"}
+            </p>
+
+  <p className="mt-2 font-bold text-green-400">
+    Total Price: {state.selectedSeats.reduce((total, seat) => total + seat.price, 0).toLocaleString()} BATH
+  </p>
+</motion.div>
+
           </>
         )}
       </div>
