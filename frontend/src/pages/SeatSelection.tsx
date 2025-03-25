@@ -1,76 +1,79 @@
-import type React from "react";
-import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { useApp } from "@/context/AppContext";
-import type { Seat, Zone } from "@/types";
-import { useQuery } from "@tanstack/react-query";
-import client from "@/lib/graphqlClient";
-import { GET_SEATS_BY_CONCERT_ZONE, GET_ZONES_BY_CONCERT } from "@/graphql/queries";
-import { Check, X } from "lucide-react";
-import { motion } from "framer-motion";
+import type React from "react"
+import { useState } from "react"
+import { useNavigate, useParams } from "react-router-dom"
+import { useApp } from "@/context/AppContext"
+import type { Seat, Zone } from "@/types"
+import { useQuery } from "@tanstack/react-query"
+import client from "@/lib/graphqlClient"
+import { GET_SEATS_BY_CONCERT_ZONE, GET_ZONES_BY_CONCERT } from "@/graphql/queries"
+import { Check, X } from "lucide-react"
+import { motion } from "framer-motion"
 
 const SeatSelection: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
-  const concertId = Number(id);
-  const navigate = useNavigate();
-  const { state, dispatch } = useApp();
-  const [selectedSection, setSelectedSection] = useState<string | null>(null);
+  const { id } = useParams<{ id: string }>()
+  const concertId = Number(id)
+  const navigate = useNavigate()
+  const { state, dispatch } = useApp()
+  const [selectedSection, setSelectedSection] = useState<string | null>(null)
 
+  // Fetch zones (for price & zoneName)
   const { data: zones = [] } = useQuery({
     queryKey: ["zones", concertId],
     queryFn: async () => {
       const res = await client.request<{ getZonesByConcert: Zone[] }>(
         GET_ZONES_BY_CONCERT,
         { concertId }
-      );
-      return res.getZonesByConcert;
+      )
+      return res.getZonesByConcert
     },
     enabled: !!concertId,
-  });
+  })
 
+  // Fetch seats by section
   const { data: seats = [], isLoading } = useQuery({
     queryKey: ["seats", concertId, selectedSection],
     queryFn: async () => {
-      if (!selectedSection || !concertId) return [];
+      if (!selectedSection || !concertId) return []
       const res = await client.request<{ getSeatsByConcertZone: Seat[] }>(
         GET_SEATS_BY_CONCERT_ZONE,
         { concertId, zoneName: selectedSection }
-      );
-      return res.getSeatsByConcertZone;
+      )
+      return res.getSeatsByConcertZone
     },
     enabled: !!concertId && !!selectedSection,
-  });
+  })
 
   const handleSectionSelect = (section: string) => {
-    setSelectedSection(section);
-    dispatch({ type: "CLEAR_SEATS" });
-  };
+    setSelectedSection(section)
+    dispatch({ type: "CLEAR_SEATS" })
+  }
 
   const handleSeatClick = (seat: Seat) => {
-    if (seat.seatStatus === "SeatStatus.booked") return;
-    const isSelected = state.selectedSeats.some((s) => s.seatId === seat.seatId);
-    if (isSelected) {
-      dispatch({ type: "REMOVE_SEAT", payload: seat.seatId.toString() });
-    } else {
-      const zone = zones.find((z) => z.zoneName === seat.zoneName);
-      const price = zone?.price ?? 0;
-      dispatch({ type: "ADD_SEAT", payload: { ...seat, price } as any });
+    if (seat.seatStatus === "SeatStatus.booked") return
 
+    const isSelected = state.selectedSeats.some((s) => s.seatId === seat.seatId)
+    const zone = zones.find((z) => z.zoneName === seat.zoneName)
+    const price = zone?.price ?? 0
+
+    if (isSelected) {
+      dispatch({ type: "REMOVE_SEAT", payload: seat.seatId.toString() })
+    } else {
+      dispatch({ type: "ADD_SEAT", payload: { ...seat, price } as any })
     }
-  };
+  }
 
   const handleSubmit = () => {
-    navigate("/payment");
-  };
+    navigate("/payment")
+  }
 
   const seatsByRow = seats.reduce((acc, seat) => {
-    const row = seat.seatNumber?.charAt(0) ?? "";
-    if (!acc[row]) acc[row] = [];
-    acc[row].push(seat);
-    return acc;
-  }, {} as Record<string, Seat[]>);
+    const row = seat.seatNumber?.charAt(0) ?? ""
+    if (!acc[row]) acc[row] = []
+    acc[row].push(seat)
+    return acc
+  }, {} as Record<string, Seat[]>)
 
-  const totalPrice = state.selectedSeats.reduce((sum, s) => sum + (s as any).price, 0);
+  const totalPrice = state.selectedSeats.reduce((sum, s) => sum + (s as any).price, 0)
 
   return (
     <div className="pt-24 pb-16 bg-brand-black min-h-screen">
@@ -80,12 +83,13 @@ const SeatSelection: React.FC = () => {
         </h2>
 
         {!selectedSection ? (
-          <div className="space-y-6">
+          <>
             <div className="mb-8 flex justify-center">
               <div className="bg-red-500 text-white font-bold uppercase text-xl py-4 w-64 text-center">STAGE</div>
             </div>
+
             {["A", "B", "C"].map((zoneLetter) => (
-              <div key={zoneLetter} className="flex justify-center gap-6">
+              <div key={zoneLetter} className="flex justify-center gap-6 mb-4">
                 {zones
                   .filter((z) => z.zoneName.startsWith(zoneLetter))
                   .map((zone) => (
@@ -110,9 +114,9 @@ const SeatSelection: React.FC = () => {
                 </div>
               ))}
             </div>
-          </div>
+          </>
         ) : (
-          <div>
+          <>
             <button
               onClick={() => setSelectedSection(null)}
               className="text-white mb-4 block text-left"
@@ -133,8 +137,8 @@ const SeatSelection: React.FC = () => {
                     <div className="text-white font-bold mr-4">{row}</div>
                     <div className="flex gap-2">
                       {rowSeats.map((seat) => {
-                        const isSelected = state.selectedSeats.some((s) => s.seatId === seat.seatId);
-                        const isBooked = seat.seatStatus === "SeatStatus.booked";
+                        const isSelected = state.selectedSeats.some((s) => s.seatId === seat.seatId)
+                        const isBooked = seat.seatStatus === "SeatStatus.booked"
                         return (
                           <div
                             key={seat.seatId}
@@ -150,7 +154,7 @@ const SeatSelection: React.FC = () => {
                           >
                             {isBooked ? <X size={18} className="text-white" /> : seat.seatNumber}
                           </div>
-                        );
+                        )
                       })}
                     </div>
                   </div>
@@ -193,11 +197,11 @@ const SeatSelection: React.FC = () => {
                   : "Please select at least one seat"}
               </button>
             </div>
-          </div>
+          </>
         )}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default SeatSelection;
+export default SeatSelection
