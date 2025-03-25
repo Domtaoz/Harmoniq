@@ -8,6 +8,8 @@ import client from "@/lib/graphqlClient"
 import { GET_SEATS_BY_CONCERT_ZONE, GET_ZONES_BY_CONCERT } from "@/graphql/queries"
 import { Check, X } from "lucide-react"
 import { motion } from "framer-motion"
+import { CREATE_BOOKING } from "@/graphql/mutations/booking";
+
 
 const SeatSelection: React.FC = () => {
   const { id } = useParams<{ id: string }>()
@@ -65,10 +67,33 @@ const SeatSelection: React.FC = () => {
   };
   
 
-  const handleSubmit = () => {
-    navigate("/payment")
-  }
-
+  const handleSubmit = async () => {
+    const seatIds = state.selectedSeats.map((s) => s.seatId);
+    const concertId = state.selectedSeats[0]?.concertId;
+    const zoneName = state.selectedSeats[0]?.zoneName;
+    const seatCount = seatIds.length;
+    const userId = state.auth.user?.id;
+  
+    const zone = zones.find((z) => z.zoneName === zoneName);
+    const zoneId = zone?.zoneId;
+  
+    try {
+      const res: { createBooking: { bookingId: number } } = await client.request(CREATE_BOOKING, {
+        userId,
+        concertId,
+        zoneId,
+        seatCount,
+        seatIds,
+      });
+  
+      const bookingId = res.createBooking.bookingId;
+      dispatch({ type: "SET_BOOKING_ID", payload: bookingId.toString() });
+      navigate("/payment");
+    } catch (error) {
+      console.error("Booking error:", error);
+    }
+  };
+  
   const seatsByRow = seats.reduce((acc, seat) => {
     const row = seat.seatNumber?.charAt(0) ?? ""
     if (!acc[row]) acc[row] = []

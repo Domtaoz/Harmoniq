@@ -22,7 +22,9 @@ type Action =
   | { type: 'CLEAR_SEATS' }
   | { type: 'ADD_TICKET'; payload: Ticket }
   | { type: 'LOGIN'; payload: User }
-  | { type: 'LOGOUT' };
+  | { type: 'LOGOUT' }
+  | { type: "SET_BOOKING_ID"; payload: string };
+
 
 // Reducer
 const reducer = (state: AppState, action: Action): AppState => {
@@ -68,6 +70,13 @@ const reducer = (state: AppState, action: Action): AppState => {
           isAuthenticated: false
         }
       };
+      case "SET_BOOKING_ID":
+        return {
+          ...state,
+          bookingId: action.payload,
+        };
+      
+      
     default:
       return state;
   }

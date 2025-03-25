@@ -20,6 +20,7 @@ export interface Seat {
   seatStatus: 'SeatStatus.available' | 'SeatStatus.booked';
   concertId: number;
   zoneName: string;
+  price?: number;
 }
 
 
@@ -44,11 +45,13 @@ export interface AppState {
   selectedConcert: Concert | null;
   selectedSeats: Seat[];
   tickets: Ticket[];
+  bookingId?: string; 
   auth: {
     user: User | null;
     isAuthenticated: boolean;
   };
 }
+
 
 export interface Zone {
   zoneId: number;
