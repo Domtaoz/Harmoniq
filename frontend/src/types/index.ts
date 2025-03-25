@@ -26,13 +26,11 @@ export interface Seat {
 
 export interface Ticket {
   ticketId: number;
+  ticketCode: string;
   concertName: string;
   zoneName: string;
   seatNumber: string;
-  showDate: string;
-  ticketCode: string;
 }
-
 
 export type User = {
   id: number;

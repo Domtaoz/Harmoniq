@@ -55,7 +55,7 @@ const Navbar: React.FC = () => {
 
         <div className="flex items-center space-x-4">
           <Link 
-            to="/tickets" 
+            to="/ticket" 
             className="flex items-center text-white transition-opacity hover:opacity-80"
           >
             <Ticket className="h-6 w-6" />
