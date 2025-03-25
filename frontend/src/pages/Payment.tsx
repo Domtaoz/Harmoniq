@@ -42,9 +42,12 @@ const PaymentPage: React.FC = () => {
   // ฟังก์ชันเมื่อยกเลิกการชำระเงิน
   const handleBackToCheckout = async () => {
     try {
-      // เรียก mutation เพื่ออัปเดตสถานะการจองเป็น 'cancelled'
-      await client.request(UPDATE_BOOKING_STATUS, { bookingId: state.bookingId, newStatus: 'cancelled' });
-      // นำทางกลับไปยังหน้าก่อนหน้า
+      
+      await client.request(UPDATE_BOOKING_STATUS, {
+        bookingId: parseInt(state.bookingId),
+        newStatus: "cancelled",
+      });
+      
       navigate(-1);
     } catch (error) {
       console.error('Cancel booking error:', error);

@@ -21,9 +21,12 @@ export const CREATE_BOOKING = gql`
 `;
 
 export const UPDATE_BOOKING_STATUS = gql`
-  mutation UpdateBookingStatus($bookingId: Int!, $status: String!) {
-    updateBookingStatus(bookingId: $bookingId, status: $status)
+mutation UpdateBookingStatus($bookingId: Int!, $newStatus: String!) {
+  updateBookingStatus(bookingId: $bookingId, newStatus: $newStatus) {
+    bookingId
+    status
   }
+}
 `;
 
 export const CONFIRM_PAYMENT_AND_GENERATE_TICKETS = gql`
