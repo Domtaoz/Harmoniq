@@ -51,3 +51,10 @@ export interface AppState {
     isAuthenticated: boolean;
   };
 }
+
+export interface Zone {
+  zoneId: number;
+  concertId: number;
+  zoneName: string;
+  price: number;
+}
