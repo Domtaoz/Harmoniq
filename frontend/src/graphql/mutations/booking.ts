@@ -37,9 +37,6 @@ export const CONFIRM_PAYMENT_AND_GENERATE_TICKETS = gql`
       concertName
       zoneName
       seatNumber
-      showDate
-      startTime
-      endTime
     }
   }
 `;

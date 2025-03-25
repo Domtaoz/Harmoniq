@@ -25,13 +25,14 @@ export interface Seat {
 
 
 export interface Ticket {
-  id: string;
-  concertId: string;
-  seats: Seat[];
-  totalPrice: number;
-  purchaseDate: string;
-  userId: string;
+  ticketId: number;
+  concertName: string;
+  zoneName: string;
+  seatNumber: string;
+  showDate: string;
+  ticketCode: string;
 }
+
 
 export type User = {
   id: number;

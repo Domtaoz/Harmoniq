@@ -13,17 +13,14 @@ export const GET_BOOKING_BY_USER = gql`
   }
 `;
 
-export const GET_TICKET_BY_USER = gql`
-  query GetTicketByUser($userId: Int!) {
-    getTicketByUser(userId: $userId) {
+export const GET_TICKETS_BY_USER = gql`
+  query GetTicketsByUser($userId: Int!) {
+    getTicketsByUser(userId: $userId) {
       ticketId
+      ticketCode
       concertName
       zoneName
       seatNumber
-      ticketCode
-      showDate
-      startTime
-      endTime
     }
   }
 `;

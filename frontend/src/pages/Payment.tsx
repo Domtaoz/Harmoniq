@@ -27,19 +27,21 @@ const PaymentPage: React.FC = () => {
     totalPrice,
   };
 
-  // ฟังก์ชันเมื่อการชำระเงินสำเร็จ
   const handlePaySuccess = async () => {
     try {
-      // เรียก mutation เพื่อยืนยันการชำระเงินและสร้างตั๋ว
-      await client.request(CONFIRM_PAYMENT_AND_GENERATE_TICKETS, { bookingId: state.bookingId });
-      // นำทางไปยังหน้าตั๋ว
+      
+      await client.request(CONFIRM_PAYMENT_AND_GENERATE_TICKETS, {
+        bookingId: parseInt(state.bookingId)
+      });
+      
+
       navigate('/ticket');
     } catch (error) {
       console.error('Payment error:', error);
     }
   };
 
-  // ฟังก์ชันเมื่อยกเลิกการชำระเงิน
+
   const handleBackToCheckout = async () => {
     try {
       
