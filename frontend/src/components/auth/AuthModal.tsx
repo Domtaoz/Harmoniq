@@ -107,13 +107,14 @@ const AuthModal: React.FC<AuthModalProps> = ({ initialMode = 'login' }) => {
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="relative">
-                  <input
-                    type="text"
-                    placeholder="Username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    className="w-full px-4 py-3 pl-10 rounded-full border border-gray-300 focus:border-brand-pink focus:ring-2 focus:ring-brand-pink/30 focus:outline-none transition-all dark:bg-gray-800 dark:border-gray-600"
-                  />
+                <input
+                  type="text"
+                  placeholder={mode === 'login' ? 'Email' : 'Username'}
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  className="w-full px-4 py-3 pl-10 rounded-full border border-gray-300 focus:border-brand-pink focus:ring-2 focus:ring-brand-pink/30 focus:outline-none transition-all dark:bg-gray-800 dark:border-gray-600"
+                />
+
                   <User className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" />
                 </div>
 
