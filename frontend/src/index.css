@@ -1,0 +1,420 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 10%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 10%;
+
+    --primary: 324 81% 64%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 0 0% 93%;
+    --secondary-foreground: 0 0% 10%;
+
+    --muted: 0 0% 93%;
+    --muted-foreground: 0 0% 45%;
+
+    --accent: 324 81% 64%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 0 0% 85%;
+    --input: 0 0% 85%;
+    --ring: 324 81% 64%;
+
+    --radius: 0.5rem;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 0 0% 10%;
+    --foreground: 0 0% 93%;
+
+    --card: 0 0% 15%;
+    --card-foreground: 0 0% 93%;
+
+    --popover: 0 0% 15%;
+    --popover-foreground: 0 0% 93%;
+
+    --primary: 324 81% 64%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 0 0% 20%;
+    --secondary-foreground: 0 0% 93%;
+
+    --muted: 0 0% 20%;
+    --muted-foreground: 0 0% 60%;
+
+    --accent: 324 81% 64%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 93%;
+
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
+    --ring: 324 81% 64%;
+    
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 324 81% 64%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+    font-family: 'Inter', sans-serif;
+  }
+}
+
+.backdrop-blur-navbar {
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.seat {
+  @apply transition-all duration-200 cursor-pointer hover:opacity-80 active:scale-95;
+}
+
+.seat-available {
+  @apply bg-brand-green text-white;
+}
+
+.seat-selected {
+  @apply bg-white border-2 border-brand-pink;
+}
+
+.seat-unavailable {
+  @apply bg-brand-red opacity-50 cursor-not-allowed hover:opacity-50;
+}
+
+.glass-card {
+  @apply bg-white/80 backdrop-blur-sm shadow-lg dark:bg-black/50;
+}
+
+.transition-card {
+  @apply transition-all duration-300 hover:shadow-xl hover:-translate-y-1;
+}
+
+.glass-effect {
+  @apply bg-white/60 backdrop-blur-md dark:bg-black/40;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-brand-pink/30 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-brand-pink/50;
+}
+
+/* Navigation link animation */
+.nav-link {
+  @apply relative;
+}
+
+.nav-link::after {
+  content: '';
+  @apply absolute bottom-0 left-0 w-0 h-0.5 bg-brand-pink transition-all duration-300;
+}
+
+.nav-link:hover::after {
+  @apply w-full;
+}
+
+/* Card hover effects */
+.concert-card {
+  @apply overflow-hidden;
+}
+
+.concert-card img {
+  @apply transition-all duration-500;
+}
+
+.concert-card:hover img {
+  @apply scale-105;
+}
+
+/* Loading animation */
+@keyframes shimmer {
+  0% {
+    background-position: -468px 0;
+  }
+  100% {
+    background-position: 468px 0;
+  }
+}
+
+.shimmer {
+  animation: shimmer 1.5s infinite linear;
+  background: linear-gradient(to right, #f6f6f6 8%, #f0f0f0 18%, #f6f6f6 33%);
+  background-size: 800px 104px;
+}
+
+/* index.css */
+.clip-trapezoid {
+  clip-path: polygon(10% 0%, 90% 0%, 100% 100%, 0% 100%);
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Realistic Arena Hall Styles */
+.venue-container {
+  position: relative;
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto;
+  perspective: 1200px;
+  transform-style: preserve-3d;
+  padding-top: 30px;
+  padding-bottom: 60px;
+  height: 600px;
+}
+
+/* Base section styles */
+.venue-section {
+  position: relative;
+  width: 110px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  transform-style: preserve-3d;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.venue-section:hover {
+  filter: brightness(1.1);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+}
+
+/* Zone colors */
+.venue-section-a {
+  background-color: rgb(34, 197, 94);
+}
+
+.venue-section-a-disabled {
+  background-color: rgba(34, 197, 94, 0.3);
+  cursor: default;
+}
+
+.venue-section-b {
+  background-color: rgb(234, 179, 8);
+}
+
+.venue-section-b-disabled {
+  background-color: rgba(234, 179, 8, 0.3);
+  cursor: default;
+}
+
+.venue-section-c {
+  background-color: rgb(59, 130, 246);
+}
+
+.venue-section-c-disabled {
+  background-color: rgba(59, 130, 246, 0.3);
+  cursor: default;
+}
+
+/* Realistic curved arena layout */
+.arena-wrapper {
+  position: relative;
+  transform-style: preserve-3d;
+  perspective: 1200px;
+}
+
+.venue-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  margin-bottom: 40px;
+  transform-style: preserve-3d;
+}
+
+/* Row A - First row */
+.row-a {
+  transform: rotateX(5deg);
+}
+
+.row-a .section-left {
+  transform: rotateY(15deg);
+}
+
+.row-a .section-center {
+  transform: rotateY(0deg);
+}
+
+.row-a .section-right {
+  transform: rotateY(-15deg);
+}
+
+/* Row B - Second row */
+.row-b {
+  transform: rotateX(10deg);
+}
+
+.row-b .section-left {
+  transform: rotateY(25deg);
+}
+
+.row-b .section-center {
+  transform: rotateY(0deg);
+}
+
+.row-b .section-right {
+  transform: rotateY(-25deg);
+}
+
+/* Row C - Third row */
+.row-c {
+  transform: rotateX(15deg);
+}
+
+.row-c .section-left {
+  transform: rotateY(35deg);
+}
+
+.row-c .section-center {
+  transform: rotateY(0deg);
+}
+
+.row-c .section-right {
+  transform: rotateY(-35deg);
+}
+
+/* Stage styling */
+.stage-container {
+  position: relative;
+  margin-bottom: 80px;
+  transform-style: preserve-3d;
+}
+
+.stage {
+  background-color: #ef4444;
+  color: white;
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 1.25rem;
+  padding: 1rem 0;
+  width: 16rem;
+  margin: 0 auto;
+  text-align: center;
+  position: relative;
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transform: rotateX(5deg);
+}
+
+/* Arena floor */
+.arena-floor {
+  position: absolute;
+  width: 100%;
+  height: 600px;
+  background: radial-gradient(ellipse at top, rgba(30, 30, 30, 0.2) 0%, rgba(0, 0, 0, 0) 70%);
+  top: 150px;
+  left: 0;
+  z-index: -1;
+}
+
+/* Row labels */
+.row-label {
+  position: absolute;
+  left: -40px;
+  color: white;
+  font-weight: bold;
+  font-size: 1.2rem;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* Curved guide lines */
+.curve-guide {
+  position: absolute;
+  border-top: 1px dashed rgba(255, 255, 255, 0.1);
+  width: 80%;
+  left: 10%;
+  z-index: -1;
+}
+
+.curve-guide-a {
+  top: 200px;
+  border-radius: 50% 50% 0 0;
+  height: 20px;
+}
+
+.curve-guide-b {
+  top: 300px;
+  border-radius: 50% 50% 0 0;
+  height: 40px;
+}
+
+.curve-guide-c {
+  top: 400px;
+  border-radius: 50% 50% 0 0;
+  height: 60px;
+}
+
+/* Perspective container */
+.perspective-container {
+  perspective: 1000px;
+  transform-style: preserve-3d;
+}
+
+
+
+
+
+
+
+
