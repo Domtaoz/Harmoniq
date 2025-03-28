@@ -38,17 +38,8 @@ const Navbar: React.FC = () => {
             >
               Home
             </Link>
-            <Link 
-              to="/filter" 
-              className={`nav-link text-white font-medium ${
-                location.pathname === '/filter' ? 'opacity-100' : 'opacity-80 hover:opacity-100'
-              }`}
-            >
-              Filter
-            </Link>
           </nav>
         </div>
-
         <div className="flex-1 max-w-md mx-4">
           <SearchInput />
         </div>

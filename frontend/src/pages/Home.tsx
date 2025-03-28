@@ -1,13 +1,19 @@
-
 import React, { useEffect, useState } from 'react';
 import ConcertCard from '@/components/concert/ConcertCard';
 import { concertData } from '@/utils/animations';
 import { Concert } from '@/types';
 import { motion } from 'framer-motion';
+import { useSearchParams } from "react-router-dom";
+
+
 
 const Home: React.FC = () => {
   const [concerts, setConcerts] = useState<Concert[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchParams] = useSearchParams();
+const searchQuery = searchParams.get("search") || "";
+
+  
 
   useEffect(() => {
     // Simulate API call
@@ -16,6 +22,10 @@ const Home: React.FC = () => {
       setLoading(false);
     }, 800);
   }, []);
+
+  const filteredConcerts = concerts.filter((concert) =>
+    concert.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   if (loading) {
     return (
@@ -49,11 +59,15 @@ const Home: React.FC = () => {
         >
           CONCERT
         </motion.h1>
-        
+        {/* 🪩 Display Filtered Concerts */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {concerts.map((concert, index) => (
-            <ConcertCard key={concert.id} concert={concert} index={index} />
-          ))}
+          {filteredConcerts.length > 0 ? (
+            filteredConcerts.map((concert, index) => (
+              <ConcertCard key={concert.id} concert={concert} index={index} />
+            ))
+          ) : (
+            <p className="text-white col-span-full">No concerts found.</p>
+          )}
         </div>
       </div>
     </div>
