@@ -113,20 +113,20 @@ class Mutation:
     @strawberry.mutation
     def create_booking(self, user_id: int, concert_id: int, zone_id: int, seat_count: int, seat_ids: List[int]) -> Optional[BookingType]:
         """สร้างการจองและบันทึกหลาย seat_id ลง booking_seats"""
-
+ 
         if seat_count != len(seat_ids):
             raise ValueError("seat_count ต้องตรงกับจำนวน seat_ids ที่เลือก")
-
+ 
         with SessionLocal() as db:
             booked_seats = (
             db.query(Seat)
             .filter(Seat.seat_id.in_(seat_ids), Seat.seat_status == "booked")
             .all()
         )
-
+ 
         if booked_seats:
             raise ValueError(f"ที่นั่ง {', '.join([seat.seat_number for seat in booked_seats])} ถูกจองแล้ว กรุณาเลือกที่นั่งอื่น")
-
+ 
         new_booking = Booking(
             user_id=user_id,
             concert_id=concert_id,
@@ -136,16 +136,16 @@ class Mutation:
         db.add(new_booking)
         db.commit()
         db.refresh(new_booking)
-
+ 
         for seat_id in seat_ids:
             new_booking_seat = BookingSeat(
                 booking_id=new_booking.booking_id,
                 seat_id=seat_id
             )
             db.add(new_booking_seat)
-
+ 
         db.commit()
-
+ 
         return BookingType(
             booking_id=new_booking.booking_id,
             user_id=new_booking.user_id,
@@ -157,7 +157,6 @@ class Mutation:
             total_price=db.query(func.sum(Zone.price)).filter(Zone.zone_id == zone_id).scalar() * seat_count,
             status=new_booking.booking_status
         )
-
 
     
     @strawberry.mutation
