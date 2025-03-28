@@ -41,7 +41,7 @@ export const generateConcerts = (): Concert[] => {
       venue: "National Stadium",
       image: "https://img5.pic.in.th/file/secure-sv1/cooktail99dea2a8325a9119.jpg",
       description: "Experience Taylor Swift's record-breaking Eras Tour, spanning all of her musical eras and biggest hits.",
-      price: "900-4000",
+      price: "1000-3000",
       genre: "Pop",
       artists: [
         {
@@ -77,7 +77,7 @@ export const generateConcerts = (): Concert[] => {
       venue: "National Stadium",
       image: "https://img2.pic.in.th/pic/mandownposterf20ae55d573a9cf4.jpg",
       description: "Experience Taylor Swift's record-breaking Eras Tour, spanning all of her musical eras and biggest hits.",
-      price: "1500-3000",
+      price: "1000-3000",
       genre: "Pop",
       artists: [
         {
@@ -109,7 +109,7 @@ export const generateConcerts = (): Concert[] => {
       venue: "National Stadium",
       image: "https://img2.pic.in.th/pic/blackpink.png",
       description: "Experience Taylor Swift's record-breaking Eras Tour, spanning all of her musical eras and biggest hits.",
-      price: "1900-7500",
+      price: "1000-3000",
       genre: "K-Pop",
       artists: [
         {

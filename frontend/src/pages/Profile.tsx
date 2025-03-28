@@ -11,7 +11,6 @@ import { updateAvatar } from '@/graphql/mutations/updateUserAvatar';
 import { updateUser } from '@/graphql/mutations/updateUser';
 
 const profilePictures = [
-  '/lovable-uploads/ccd731ff-8455-49ef-92b3-92b8ca80968e.png',
   'https://api.dicebear.com/6.x/micah/svg?seed=Felix',
   'https://api.dicebear.com/6.x/micah/svg?seed=Pepper',
   'https://api.dicebear.com/6.x/micah/svg?seed=Misty',

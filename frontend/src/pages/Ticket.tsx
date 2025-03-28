@@ -69,20 +69,17 @@ const Ticket: React.FC = () => {
             {/* Right: QR + Ticket ID + Download */}
             <div className="w-72 border-l border-dashed border-gray-600 p-4 flex flex-col items-center justify-between">
             <QRCode
-    value={JSON.stringify({
-    concertName: ticket.concertName,
-    zoneName: ticket.zoneName,
-    seatNumber: ticket.seatNumber,
-    ticketId: ticket.ticketId,
-  })}
-  size={140}
-  bgColor="#fff"
-/>
+              value={JSON.stringify({
+              concertName: ticket.concertName,
+              zoneName: ticket.zoneName,
+              seatNumber: ticket.seatNumber,
+              ticketId: ticket.ticketId,
+            })}
+            size={140}
+            bgColor="#fff"
+          />
 
-              <div className="mt-6 w-full text-center">
-                <div className="text-xs text-gray-400">TICKET ID:</div>
-                <div className="text-sm">{ticket.ticketId}</div>
-              </div>
+              
 
               <button
                 onClick={() => handleDownload(ticket.ticketId.toString())}
