@@ -11,6 +11,10 @@ const Index = () => {
     navigate('/');
   };
 
+
+
+
+  
   return (
     <div className="min-h-screen bg-gradient-to-b from-brand-black to-gray-900 flex items-center justify-center">
       <div className="container px-4 py-16 text-center">

@@ -82,6 +82,10 @@ const AuthModal: React.FC<AuthModalProps> = ({ initialMode = 'login' }) => {
     }
   };
 
+
+
+
+  
   return (
     <div className="pt-24 pb-16 min-h-screen flex items-center justify-center bg-brand-black">
       <div className="w-full max-w-md">

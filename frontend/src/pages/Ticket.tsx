@@ -33,6 +33,10 @@ const Ticket: React.FC = () => {
     link.click();
   };
 
+
+
+
+
   return (
     <div className="pt-24 pb-16 bg-white min-h-screen px-6">
       <h1 className="text-3xl font-bold text-yellow-400 mb-10">YOUR TICKET</h1>
@@ -55,10 +59,10 @@ const Ticket: React.FC = () => {
                 <h2 className="text-xl font-bold">{ticket.concertName}</h2>
               </div>
               <div className="mt-6 px-6">
-                <div className="text-xs text-gray-400">SEAT</div>
+                <div className="text-xs text-gray-400">ZONE</div>
                 <div className="text-xl font-bold mb-3">{ticket.zoneName}</div>
 
-                <div className="text-xs text-gray-400">ROW</div>
+                <div className="text-xs text-gray-400">SEAT</div>
                 <div className="text-xl font-bold mb-3">{ticket.seatNumber}</div>
 
                 <div className="text-xs text-gray-400">DATE</div>
@@ -68,18 +72,16 @@ const Ticket: React.FC = () => {
 
             {/* Right: QR + Ticket ID + Download */}
             <div className="w-72 border-l border-dashed border-gray-600 p-4 flex flex-col items-center justify-between">
-            <QRCode
-              value={JSON.stringify({
-              concertName: ticket.concertName,
-              zoneName: ticket.zoneName,
-              seatNumber: ticket.seatNumber,
-              ticketId: ticket.ticketId,
-            })}
-            size={140}
-            bgColor="#fff"
-          />
-
-              
+              <QRCode
+                value={JSON.stringify({
+                concertName: ticket.concertName,
+                zoneName: ticket.zoneName,
+                seatNumber: ticket.seatNumber,
+                ticketId: ticket.ticketId,
+              })}
+              size={140}
+              bgColor="#fff"
+              />
 
               <button
                 onClick={() => handleDownload(ticket.ticketId.toString())}

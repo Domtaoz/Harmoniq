@@ -31,15 +31,15 @@ const PaymentPage: React.FC = () => {
   const handlePaySuccess = async () => {
     setIsLoading(true);
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500)); // Loading spinner
+      await new Promise(resolve => setTimeout(resolve, 1500)); 
       await client.request(CONFIRM_PAYMENT_AND_GENERATE_TICKETS, {
         bookingId: parseInt(state.bookingId),
       });
 
       setIsLoading(false);
-      setIsSuccess(true); // Show success animation
+      setIsSuccess(true); 
 
-      await new Promise(resolve => setTimeout(resolve, 1200)); // Wait before navigating
+      await new Promise(resolve => setTimeout(resolve, 1200)); 
       navigate('/ticket');
     } catch (error) {
       console.error('Payment error:', error);
@@ -59,9 +59,13 @@ const PaymentPage: React.FC = () => {
     }
   };
 
+
+
+
+  
   return (
     <div className="pt-24 pb-16 bg-brand-black min-h-screen text-white relative">
-      {/* 🔄 Overlay Loader or Success */}
+     
       {(isLoading || isSuccess) && (
         <div className="absolute inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
           {isLoading && (
@@ -139,7 +143,6 @@ const PaymentPage: React.FC = () => {
         </div>
       </div>
 
-      {/* ✅ Add this style animation in global CSS or Tailwind config */}
       <style>
         {`
           @keyframes scaleCheck {

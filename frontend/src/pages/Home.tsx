@@ -11,12 +11,12 @@ const Home: React.FC = () => {
   const [concerts, setConcerts] = useState<Concert[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchParams] = useSearchParams();
-const searchQuery = searchParams.get("search") || "";
+  const searchQuery = searchParams.get("search") || "";
 
   
 
   useEffect(() => {
-    // Simulate API call
+   
     setTimeout(() => {
       setConcerts(concertData);
       setLoading(false);
@@ -27,6 +27,10 @@ const searchQuery = searchParams.get("search") || "";
     concert.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+
+
+
+  
   if (loading) {
     return (
       <div className="pt-24 min-h-screen">
@@ -47,6 +51,10 @@ const searchQuery = searchParams.get("search") || "";
       </div>
     );
   }
+
+
+
+
 
   return (
     <div className="pt-24 min-h-screen">

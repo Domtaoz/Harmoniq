@@ -40,7 +40,6 @@ CREATE TABLE bookings (
     user_id INT UNSIGNED NOT NULL,
     concert_id INT NOT NULL,
     zone_id INT NOT NULL,
-    seat_id INT NOT NULL,
     booking_status ENUM('pending', 'confirmed', 'cancelled') DEFAULT 'pending',
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (concert_id) REFERENCES concerts(concert_id) ON DELETE CASCADE,

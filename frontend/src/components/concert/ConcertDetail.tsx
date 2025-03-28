@@ -18,6 +18,10 @@ const ConcertDetail: React.FC<ConcertDetailProps> = ({ concert }) => {
     navigate(`/concert/${concert.id}/seats`);
   };
 
+
+
+
+  
   return (
     <div className="py-20">
       <div className="container mx-auto px-4">

@@ -12,7 +12,7 @@ const ConcertDetail: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate API call
+    
     const timer = setTimeout(() => {
       const foundConcert = concertData.find(c => c.id === id);
       
@@ -28,6 +28,10 @@ const ConcertDetail: React.FC = () => {
     return () => clearTimeout(timer);
   }, [id, navigate]);
 
+
+
+
+  
   if (loading) {
     return (
       <div className="pt-24 min-h-screen">

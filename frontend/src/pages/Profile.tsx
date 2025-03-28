@@ -90,6 +90,10 @@ const Profile: React.FC = () => {
     navigate('/auth');
   };
 
+
+
+
+  
   return (
     <div className="min-h-screen pt-24 pb-16 flex items-center justify-center bg-brand-black">
       <motion.div

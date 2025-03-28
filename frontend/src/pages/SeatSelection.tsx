@@ -97,24 +97,27 @@ const SeatSelection: React.FC = () => {
 
   const totalPrice = state.selectedSeats.reduce((sum, s) => sum + (s as any).price, 0)
 
+
+
+
+  
   return (
     <div className="pt-24 pb-16 bg-brand-black min-h-screen">
       <div className="container mx-auto px-4 text-center">
 
       {state.selectedConcert && (
-  <div className="flex items-center justify-center gap-6 text-white mb-10">
-    <img
-      src={state.selectedConcert.image}
-      alt={state.selectedConcert.title}
-      className="w-32 h-44 object-cover rounded-md shadow-md"
-    />
-    <div className="text-left">
-      <h1 className="text-3xl font-bold">{state.selectedConcert.title}</h1>
-      <p className="text-lg">{state.selectedConcert.date}</p>
-    </div>
-  </div>
-)}
-
+      <div className="flex items-center justify-center gap-6 text-white mb-10">
+        <img
+          src={state.selectedConcert.image}
+          alt={state.selectedConcert.title}
+          className="w-32 h-44 object-cover rounded-md shadow-md"
+        />
+        <div className="text-left">
+          <h1 className="text-3xl font-bold">{state.selectedConcert.title}</h1>
+          <p className="text-lg">{state.selectedConcert.date}</p>
+        </div>
+      </div>
+      )}
 
         <h2 className="text-2xl font-bold text-white mb-6">
           Select Seats {selectedSection && `in Section ${selectedSection}`}
@@ -149,23 +152,23 @@ const SeatSelection: React.FC = () => {
               </div>
             ))}
 
-<div className="mt-8 border border-red-600 p-4 rounded-lg w-fit mx-auto space-y-2">
-  {zones.map((zone) => {
-    let dotColor = "bg-white"
-    if (zone.price === 3000) dotColor = "bg-green-500"
-    else if (zone.price === 1500) dotColor = "bg-orange-500"
-    else if (zone.price === 1000) dotColor = "bg-sky-500"
+          <div className="mt-8 border border-red-600 p-4 rounded-lg w-fit mx-auto space-y-2">
+            {zones.map((zone) => {
+              let dotColor = "bg-white"
+              if (zone.price === 3000) dotColor = "bg-green-500"
+              else if (zone.price === 1500) dotColor = "bg-orange-500"
+              else if (zone.price === 1000) dotColor = "bg-sky-500"
 
-    return (
-      <div key={zone.zoneName} className="flex items-center gap-4 text-white">
-        <div className={`w-5 h-5 rounded-full ${dotColor}`} />
-        <span className="font-bold">
-          {zone.zoneName} - {zone.price.toLocaleString()} BATH
-        </span>
-      </div>
-    )
-  })}
-</div>
+              return (
+                <div key={zone.zoneName} className="flex items-center gap-4 text-white">
+                  <div className={`w-5 h-5 rounded-full ${dotColor}`} />
+                  <span className="font-bold">
+                    {zone.zoneName} - {zone.price.toLocaleString()} BATH
+                  </span>
+                </div>
+              )
+            })}
+          </div>
 
           </>
         ) : (

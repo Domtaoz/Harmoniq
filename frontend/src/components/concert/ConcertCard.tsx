@@ -23,6 +23,10 @@ const ConcertCard: React.FC<ConcertCardProps> = ({ concert, index }) => {
     })() : 
     'Date TBA';
 
+
+
+
+    
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
